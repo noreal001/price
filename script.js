@@ -233,22 +233,31 @@ let cart = [];
 
 // --- LEVEL SYSTEM ---
 function calculateLevel(total) {
-    if (total < 7000) return { current: 0, nextThreshold: 7000, progress: total, totalNeeded: 7000 };
-
-    // Level 1 starts at 7,000. Each subsequent level is +10,000
-    const BASE = 7000;
     const STEP = 10000;
+    const MIN = 7000;
 
-    let lvl = Math.floor((total - BASE) / STEP) + 1;
-    let currentLvlThreshold = BASE + (lvl - 1) * STEP;
-    let nextLvlThreshold = BASE + lvl * STEP;
+    // Below 7000: Progress to Minimum Order
+    if (total < MIN) {
+        return { current: 0, nextThreshold: MIN, progress: total, totalNeeded: MIN, isMinimum: true };
+    }
+
+    // Between 7000 and 10000: Progress to Level 1
+    if (total < STEP) {
+        return { current: 0, nextThreshold: STEP, progress: total - MIN, totalNeeded: STEP - MIN, isMinimum: false };
+    }
+
+    // Level 1 starts at 10,000. 10k = L1, 20k = L2, etc.
+    let lvl = Math.floor(total / STEP);
+    let currentLvlThreshold = lvl * STEP;
+    let nextLvlThreshold = (lvl + 1) * STEP;
     let progressInLevel = total - currentLvlThreshold;
 
     return {
         current: lvl,
         nextThreshold: nextLvlThreshold,
         progress: progressInLevel,
-        totalNeeded: STEP
+        totalNeeded: STEP,
+        isMinimum: false
     };
 }
 
@@ -264,7 +273,7 @@ function updateCartUI() {
     // Sidebar Counter
     const sbCount = document.getElementById('sidebar-cart-count');
 
-    let total = cart.reduce((acc, item) => acc + item.totalPrice, 0);
+    let total = cart.reduce((acc, item) => acc + (item.totalPrice * (item.quantity || 1)), 0);
     let count = cart.length;
 
     if (bar) {
@@ -285,25 +294,25 @@ function updateCartUI() {
         if (pct > 100) pct = 100;
 
         fill.style.width = `${pct}%`;
-        fill.style.background = total < 7000 ? '#999' : 'var(--primary-color)';
+        fill.style.background = lvlInfo.isMinimum ? '#999' : 'var(--primary-color)';
 
-        if (total < 7000) {
+        if (lvlInfo.isMinimum) {
             let remaining = 7000 - total;
-            hint.innerText = `Минимальный заказ: Еще ${remaining.toLocaleString()} ₽ до Уровня 1 (7,000 ₽)`;
+            hint.innerText = `Еще ${remaining.toLocaleString()} ₽ до минимального заказа`;
             targetEl.innerText = `7,000 ₽`;
-            targetEl.style.display = 'block';
         } else {
-            let remaining = lvlInfo.nextThreshold - total;
-            hint.innerText = `Уровень ${lvlInfo.current} • Еще ${remaining.toLocaleString()} ₽ до Уровня ${lvlInfo.current + 1} (${lvlInfo.nextThreshold.toLocaleString()} ₽)`;
+            hint.innerText = `Ваш уровень отобразится в профиле`;
             targetEl.innerText = `${lvlInfo.nextThreshold.toLocaleString()} ₽`;
-            targetEl.style.display = 'block';
-        }
 
-        // Update profile header level
-        const levelHeader = document.getElementById('userLevelHeader');
-        if (levelHeader) {
-            levelHeader.innerText = `Уровень ${lvlInfo.current}`;
+            // Highlight profile level if it changed (visual feedback)
+            const levelHeader = document.getElementById('userLevelHeader');
+            if (levelHeader) {
+                levelHeader.innerText = `Уровень ${lvlInfo.current}`;
+                if (lvlInfo.current > 0) levelHeader.style.opacity = '1';
+                else levelHeader.style.opacity = '0.5';
+            }
         }
+        targetEl.style.display = 'block';
 
         // Make cart bar clickable
         bar.style.cursor = 'pointer';
@@ -373,7 +382,8 @@ window.addToCart = function (id) {
         quality: qualityLabel,
         volume: volume,
         totalPrice: totalPrice,
-        unit: (currentCategory === 'bottles') ? 'pcs' : 'g'
+        unit: (currentCategory === 'bottles') ? 'pcs' : 'g',
+        quantity: 1
     });
 
     updateCartUI();
