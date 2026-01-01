@@ -544,12 +544,12 @@ function updateCartUI() {
 
         if (total < 7000) {
             let remaining = 7000 - total;
-            hint.innerText = `[${currentMilestone.name}] Еще ${remaining.toLocaleString()} ₽ до минимального заказа`;
+            hint.innerText = `${currentMilestone.name}: Еще ${remaining.toLocaleString()} ₽ до минимального заказа`;
         } else if (nextMilestone) {
             let remaining = nextMilestone.threshold - total;
-            hint.innerText = `${currentMilestone.emoji} [${currentMilestone.name}] ${getRandomSlogan(currentMilestone)} • Еще ${remaining.toLocaleString()} ₽ до уровня ${nextMilestone.name} (${nextMilestone.threshold.toLocaleString()} ₽)`;
+            hint.innerText = `${currentMilestone.emoji} ${currentMilestone.name}: ${getRandomSlogan(currentMilestone)} • Еще ${remaining.toLocaleString()} ₽ до уровня ${nextMilestone.name} (${nextMilestone.threshold.toLocaleString()} ₽)`;
         } else {
-            hint.innerText = `${currentMilestone.emoji} [${currentMilestone.name}] ${getRandomSlogan(currentMilestone)}`;
+            hint.innerText = `${currentMilestone.emoji} ${currentMilestone.name}: ${getRandomSlogan(currentMilestone)}`;
         }
 
         if (nextMilestone) {

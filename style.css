@@ -1416,8 +1416,8 @@ body[class*="theme-"] .theme-toggle-btn:hover {
 
 /* Fix cart progress bar to prevent text wrapping */
 .cart-progress-container {
-    max-width: 600px !important;
-    min-width: 500px;
+    max-width: 800px !important;
+    min-width: 600px;
 }
 
 .cart-min-hint {
