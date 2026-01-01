@@ -15,6 +15,11 @@
     --overlay-bg: transparent;
     --sidebar-bg: #f8f8f8;
     --card-radius: 16px;
+
+    /* Table Specifics */
+    --table-header-bg: #f9f9f9;
+    --table-row-hover: #fafafa;
+    --table-border: #eee;
 }
 
 /* Theme: Winter (Total Black) */
@@ -29,6 +34,10 @@ body.theme-winter {
     --shadow-soft: 0 4px 20px rgba(255, 255, 255, 0.15);
     --particle-color: rgba(255, 255, 255, 0.9);
     --sidebar-bg: #0a0a0a;
+
+    --table-header-bg: #111;
+    --table-row-hover: #151515;
+    --table-border: #333;
 }
 
 /* Theme: Cyberpunk (Sleek Minimal) */
@@ -43,6 +52,10 @@ body.theme-cyberpunk {
     --shadow-soft: 0 0 20px rgba(0, 255, 157, 0.15);
     --particle-color: transparent;
     --sidebar-bg: #050505;
+
+    --table-header-bg: rgba(0, 255, 157, 0.05);
+    --table-row-hover: rgba(0, 255, 157, 0.02);
+    --table-border: #00442a;
 }
 
 * {
@@ -65,9 +78,7 @@ body {
     width: 100vw;
 }
 
-/* --- Theme Backgrounds & Special Effects --- */
-
-/* Winter */
+/* --- Theme Backgrounds --- */
 body.theme-winter {
     background: #000000;
 }
@@ -76,7 +87,6 @@ body.theme-winter .card {
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Cyberpunk */
 body.theme-cyberpunk {
     background:
         repeating-linear-gradient(0deg,
@@ -120,7 +130,7 @@ body.theme-cyberpunk .nav-item.active {
 }
 
 
-/* ================= LOGIN STYLES ================= */
+/* ================= LOGIN & COMMON ================= */
 .login-container {
     width: 100%;
     height: 100%;
@@ -144,7 +154,6 @@ body.theme-cyberpunk .nav-item.active {
     border-radius: var(--card-radius);
 }
 
-/* Reset login-card border for custom themes */
 body.theme-winter .login-card,
 body.theme-cyberpunk .login-card {
     border-radius: var(--card-radius);
@@ -154,6 +163,23 @@ body.theme-cyberpunk .login-card {
     font-size: 2.5rem;
     margin-bottom: 24px;
     color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Dynamic Logo Animation Class */
+.dynamic-logo-icon {
+    transition: opacity 0.5s ease-in-out;
+}
+
+.fade-out {
+    opacity: 0;
+}
+
+.fade-in {
+    opacity: 1;
 }
 
 .login-card h1 {
@@ -224,7 +250,6 @@ input[type="tel"]:focus {
     border-color: var(--primary-color);
 }
 
-/* Specific overrides */
 body:not([class*="theme-"]) input[type="tel"]:focus {
     box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
 }
@@ -404,6 +429,7 @@ body.theme-winter .footer-text a {
     display: flex;
     flex-direction: column;
     transition: background 0.5s;
+    flex-shrink: 0;
 }
 
 .sidebar-header {
@@ -471,6 +497,7 @@ body.theme-cyberpunk .nav-item:hover {
     flex: 1;
     padding: 40px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .top-bar {
@@ -525,6 +552,7 @@ body.theme-winter .avatar {
     transform: scale(1.1);
 }
 
+/* --- CONTENT GRID & CARDS --- */
 .content-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -585,65 +613,88 @@ body.theme-cyberpunk .stat-info h3 {
     color: var(--text-color);
 }
 
-.activity-list {
-    margin-top: 20px;
+/* --- PRODUCTS TABLE --- */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
 }
 
-.activity-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border-color);
+.products-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
 }
 
-.activity-item:last-child {
-    border-bottom: none;
+.products-table th,
+.products-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--table-border);
+    vertical-align: middle;
 }
 
-.activity-item .icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1rem;
-}
-
-.bg-green {
-    background: var(--success-color);
-}
-
-.bg-blue {
-    background: #007aff;
-}
-
-.bg-purple {
-    background: #bf00ff;
-}
-
-.activity-item .details h4 {
-    font-size: 1rem;
+.products-table th {
+    font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 2px;
+    color: #999;
+    background: var(--table-header-bg);
+    white-space: nowrap;
 }
 
-.activity-item .details .time {
-    font-size: 0.8rem;
-    color: #666;
+.products-table th:first-child {
+    border-top-left-radius: 12px;
 }
 
-body.theme-winter .activity-item .details .time,
-body.theme-cyberpunk .activity-item .details .time {
-    color: rgba(255, 255, 255, 0.5);
+.products-table th:last-child {
+    border-top-right-radius: 12px;
 }
 
-.activity-item .amount {
-    margin-left: auto;
+.products-table tbody tr:hover {
+    background: var(--table-row-hover);
+}
+
+.product-name-cell {
     font-weight: 600;
-    color: var(--success-color);
+    color: var(--text-color);
+}
+
+/* Custom In-Table Selects */
+.custom-select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.custom-select:focus {
+    border-color: var(--primary-color);
+}
+
+body.theme-winter .custom-select,
+body.theme-cyberpunk .custom-select {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.price-tag {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.85rem;
 }
 
 /* Animation Utils */
@@ -669,27 +720,22 @@ body.theme-cyberpunk .activity-item .details .time {
     pointer-events: none;
 }
 
-.snowflake,
-.bubble {
+.snowflake {
     position: absolute;
     color: variable;
     pointer-events: none;
-}
-
-.snowflake {
     top: -10px;
     animation: fall linear forwards;
     color: var(--particle-color);
 }
 
-/* Bubbles css removed as requested */
 @keyframes fall {
     to {
         transform: translateY(110vh) rotate(360deg);
     }
 }
 
-/* Theme Switcher (Absolute Login Page) */
+/* Theme Switcher */
 .theme-switcher {
     position: absolute;
     top: 20px;
@@ -740,7 +786,6 @@ body.theme-cyberpunk .theme-btn.active {
     background: #00ff9d;
 }
 
-/* Specific button colors for better visibility in switcher */
 body.theme-winter .theme-switcher {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.15);

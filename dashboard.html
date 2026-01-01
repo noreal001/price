@@ -4,41 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный Кабинет</title>
+    <title>BAHUR - Личный Кабинет</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="base">
-    <!-- Particle Container for Themes -->
+    <!-- Particle Container -->
     <div id="particles"></div>
 
-    <!-- Dashboard Container -->
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <i class="fa-solid fa-cube brand-icon"></i>
-                <span class="brand-name">Portal</span>
+                <span class="brand-name">BAHUR</span>
+                <i id="dynamicLogoSidebar" class="fa-solid fa-cube dynamic-logo-icon brand-icon"></i>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active">
-                    <i class="fa-solid fa-house"></i>
+                <button class="nav-item active" onclick="switchView('stats')">
+                    <i class="fa-solid fa-home"></i>
                     <span>Главная</span>
-                </a>
-                <a href="#" class="nav-item">
+                </button>
+                <button class="nav-item" onclick="switchView('products')">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Товары</span>
+                </button>
+                <button class="nav-item" onclick="alert('В разработке')">
                     <i class="fa-solid fa-wallet"></i>
                     <span>Кошелек</span>
-                </a>
-                <a href="#" class="nav-item">
+                </button>
+                <button class="nav-item" onclick="alert('В разработке')">
                     <i class="fa-solid fa-chart-line"></i>
                     <span>Статистика</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Настройки</span>
-                </a>
+                </button>
             </nav>
             <div class="sidebar-footer">
                 <button id="logoutBtn" class="nav-item logout">
@@ -51,10 +50,9 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-bar">
-                <h2 id="greeting">Добро пожаловать</h2>
+                <h2 id="pageTitle">Главная</h2>
                 <div class="user-profile">
                     <div class="theme-switcher-dashboard">
-                        <!-- Theme Toggle in Dashboard -->
                         <button class="theme-btn" onclick="setTheme('base')" title="Minimal"><i
                                 class="fa-solid fa-sun opacity-50"></i></button>
                         <button class="theme-btn" onclick="setTheme('theme-winter')" title="Winter"><i
@@ -68,8 +66,8 @@
                 </div>
             </header>
 
-            <div class="content-grid">
-                <!-- Stats Cards -->
+            <!-- View: Stats (Default) -->
+            <div id="view-stats" class="content-grid">
                 <div class="card stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
                     <div class="stat-info">
@@ -91,7 +89,6 @@
                         <p class="value">45</p>
                     </div>
                 </div>
-
                 <!-- Recent Activity -->
                 <div class="card large-card">
                     <h3>Последняя активность</h3>
@@ -99,28 +96,41 @@
                         <div class="activity-item">
                             <div class="icon bg-green"><i class="fa-solid fa-check"></i></div>
                             <div class="details">
-                                <h4>Вход выполнен</h4>
+                                <h4>Заказ #4295 выполнен</h4>
                                 <span class="time">Только что</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="icon bg-blue"><i class="fa-solid fa-wallet"></i></div>
-                            <div class="details">
-                                <h4>Пополнение баланса</h4>
-                                <span class="time">2 часа назад</span>
-                            </div>
-                            <span class="amount">+ ₽ 5,000</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="icon bg-purple"><i class="fa-solid fa-bolt"></i></div>
-                            <div class="details">
-                                <h4>Обновление тарифа</h4>
-                                <span class="time">Вчера</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- View: Products (Hidden by default) -->
+            <div id="view-products" class="content-grid" style="display: none;">
+                <div class="card large-card">
+                    <h3>Каталог BAHUR</h3>
+                    <p class="subtitle" style="margin-bottom: 20px;">Выберите бренд, качество и объем для расчета цены.
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">Название</th>
+                                    <th style="width: 20%">Бренд</th>
+                                    <th style="width: 20%">Качество</th>
+                                    <th style="width: 15%">Объем</th>
+                                    <th style="width: 10%">Цена</th>
+                                    <th style="width: 10%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
