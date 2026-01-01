@@ -231,33 +231,6 @@ function renderProducts() {
 // --- CART SYSTEM ---
 let cart = [];
 
-// --- DYNAMIC ICON SYSTEM ---
-const CART_ICONS = [
-    'fa-basket-shopping', 'fa-cart-shopping', 'fa-bag-shopping', 'fa-box',
-    'fa-boxes-stacked', 'fa-gift', 'fa-truck-fast', 'fa-credit-card',
-    'fa-wallet', 'fa-store', 'fa-shop', 'fa-tag', 'fa-tags', 'fa-ticket',
-    'fa-barcode', 'fa-qrcode', 'fa-receipt', 'fa-coins', 'fa-gem', 'fa-crown'
-];
-let currentIconIndex = 0;
-
-function rotateCartIcon() {
-    const iconEl = document.querySelector('#cartDynamicIcon .main-icon');
-    if (!iconEl) return;
-
-    iconEl.style.opacity = '0';
-    iconEl.style.transform = 'scale(0.5) rotate(-20deg)';
-
-    setTimeout(() => {
-        currentIconIndex = (currentIconIndex + 1) % CART_ICONS.length;
-        iconEl.className = `fa-solid ${CART_ICONS[currentIconIndex]} main-icon`;
-        iconEl.style.opacity = '1';
-        iconEl.style.transform = 'scale(1) rotate(0deg)';
-    }, 500);
-}
-
-// Every minute
-setInterval(rotateCartIcon, 60000);
-
 // --- LEVEL SYSTEM ---
 const LEVEL_THRESHOLDS = [
     7000, 15000, 28000, 45000, 70000, 100000, 140000, 190000, 250000, 350000, 500000, 750000, 1000000
@@ -307,12 +280,14 @@ function updateCartUI() {
     const sumEl = document.getElementById('cartSum');
     const targetEl = document.getElementById('cartTarget');
     const hint = document.getElementById('cartHint');
-    const badge = document.getElementById('cartBadge');
+    const badge = document.getElementById('badge');
     const pctLabel = document.getElementById('cartLevelPct');
-    const neonMask = document.querySelector('.neon-fill-mask');
+    const bagRect = document.getElementById('bagFillRect');
 
     // Profile Widget
-    // IDs are handled in the profile update section below
+    const pLvlCurrent = document.getElementById('profileLvlCurrentName');
+    const pLvlNext = document.getElementById('profileLvlNextName');
+    const pLvlProg = document.getElementById('profileLvlProgress');
 
     let total = cart.reduce((acc, item) => acc + (item.totalPrice * (item.quantity || 1)), 0);
     let count = cart.length;
@@ -328,10 +303,13 @@ function updateCartUI() {
 
         sumEl.innerText = `${total.toLocaleString('ru-RU').replace(/,/g, ' ')} ₽`;
 
-        let itemsText = 'товаров';
-        if (count % 10 === 1 && count % 100 !== 11) itemsText = 'товар';
-        else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) itemsText = 'товара';
-        badge.innerText = `${count} ${itemsText}`;
+        const cartBadge = document.getElementById('cartBadge');
+        if (cartBadge) {
+            let itemsText = 'товаров';
+            if (count % 10 === 1 && count % 100 !== 11) itemsText = 'товар';
+            else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) itemsText = 'товара';
+            cartBadge.innerText = `${count} ${itemsText}`;
+        }
 
         if (lvlInfo.isMinimum) {
             let remaining = 7000 - total;
@@ -346,9 +324,15 @@ function updateCartUI() {
         }
 
         if (pctLabel) pctLabel.innerText = `${Math.round(pct)}%`;
-        if (neonMask) neonMask.style.height = `${pct}%`;
+        if (bagRect) {
+            // SVG coordinate: 24 (bottom) to 0 (top)
+            let h = 24 * (pct / 100);
+            let y = 24 - h;
+            bagRect.setAttribute('y', y);
+            bagRect.setAttribute('height', h);
+        }
 
-        generateSegments('mainBarSegmented', pct, 25);
+        generateSegments('mainBarSegmented', pct, 30);
 
         // Make cart bar clickable
         bar.style.cursor = 'pointer';
@@ -358,19 +342,15 @@ function updateCartUI() {
     }
 
     // Update Profile Widget
-    const pLvlCurrent = document.getElementById('profileLvlCurrentName');
-    const pLvlNext = document.getElementById('profileLvlNextName');
-    const pLvlProg = document.getElementById('profileLvlProgress');
-
     if (pLvlCurrent && pLvlNext && pLvlProg) {
-        pLvlCurrent.innerText = `Уровень ${lvlInfo.current}`;
-        pLvlNext.innerText = `Уровень ${lvlInfo.current + 1}`;
+        pLvlCurrent.innerText = `Lvl ${lvlInfo.current}`;
+        pLvlNext.innerText = `Lvl ${lvlInfo.current + 1}`;
 
         const currentSum = total.toLocaleString('ru-RU').replace(/,/g, ' ');
         const targetSum = lvlInfo.nextThreshold.toLocaleString('ru-RU').replace(/,/g, ' ');
         pLvlProg.innerText = `${currentSum} / ${targetSum}`;
 
-        generateSegments('profileLvlBar', pct, 22);
+        generateSegments('profileLvlBar', pct, 25);
     }
 
     // Sidebar Counter
