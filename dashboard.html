@@ -73,13 +73,10 @@
                         <div class="value">0 ₽</div>
                     </div>
                 </div>
-                <!-- More stats... -->
             </div>
 
             <!-- Products View -->
             <div id="view-products">
-
-                <!-- Catalog Header / Categories -->
                 <div class="catalog-header">
                     <div class="category-tabs">
                         <div class="cat-tab-wrapper">
@@ -87,17 +84,11 @@
                                 <i class="fa-solid fa-bottle-droplet"></i> Масла
                                 <i class="fa-solid fa-angle-down arrow-icon"></i>
                             </button>
-                            <!-- Dropdown for Brands -->
                             <div class="brand-dropdown">
                                 <div class="dropdown-item" onclick="filterBrand('all')">Все бренды</div>
                                 <div class="dropdown-item" onclick="filterBrand('Luzi')">Luzi</div>
-                                <div class="dropdown-item" onclick="filterBrand('Eps')">Eps</div>
-                                <div class="dropdown-item" onclick="filterBrand('Seluz')">Seluz</div>
-                                <div class="dropdown-item" onclick="filterBrand('Givaudan')">Givaudan</div>
-                                <div class="dropdown-item" onclick="filterBrand('Mane')">Mane</div>
                             </div>
                         </div>
-
                         <button class="cat-tab" onclick="switchCategory('bottles', this)">
                             <i class="fa-solid fa-flask"></i> Флаконы
                         </button>
@@ -107,7 +98,6 @@
                     </div>
                 </div>
 
-                <!-- Table -->
                 <div class="card large-card">
                     <div class="table-responsive">
                         <table class="products-table">
@@ -122,21 +112,19 @@
                                     <th style="width: 10%"></th>
                                 </tr>
                             </thead>
-                            <tbody id="productsTableBody">
-                                <!-- JS Injected -->
-                            </tbody>
+                            <tbody id="productsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Cart View (NEW) -->
+            <!-- Cart View -->
             <div id="view-cart" style="display: none;">
                 <div class="card large-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                         <h3>Ваш заказ</h3>
-                        <button class="btn-primary btn-small"
-                            style="width:auto; background:var(--error-color); border-color:var(--error-color);"
+                        <button
+                            style="background:transparent; border:none; color:var(--text-color); opacity:0.3; cursor:pointer; font-size:0.75rem; text-decoration:underline;"
                             onclick="clearCart()">Очистить корзину</button>
                     </div>
                     <div class="table-responsive">
@@ -150,16 +138,22 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody id="cartTableBody">
-                                <!-- Cart Items -->
-                            </tbody>
+                            <tbody id="cartTableBody"></tbody>
                         </table>
                     </div>
-                    <div style="margin-top:20px; text-align:right; font-size:1.5rem; font-weight:700;">
-                        Итого: <span id="cartViewTotal" style="color:var(--primary-color);">0 ₽</span>
-                    </div>
-                    <div style="margin-top:20px; display:flex; justify-content:flex-end;">
-                        <button class="btn-primary" style="width:200px;">Оформить заказ</button>
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px; gap:20px;">
+                        <button class="btn-primary checkout-btn"
+                            style="flex:1; padding:8px 15px; font-size:0.85rem; max-width:250px;">
+                            <i class="fa-solid fa-rocket" style="margin-right:8px;"></i>
+                            <span>Оформить заказ</span>
+                        </button>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.9rem; opacity:0.7; margin-bottom:4px;">Итого:</div>
+                            <div style="font-size:1.8rem; font-weight:700; color:var(--primary-color);">
+                                <span id="cartViewTotal">0 ₽</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -175,14 +169,14 @@
         <div class="cart-info">
             <div class="cart-labels">
                 <span id="cartSum">0 ₽</span>
-                <span id="cartTarget">5 000 ₽</span>
+                <span id="cartTarget">7 000 ₽</span>
             </div>
             <div class="progress-track">
                 <div class="progress-fill" id="cartProgress" style="width: 0%;"></div>
             </div>
-            <div class="cart-min-hint" id="cartHint">Еще 5 000 ₽ до минимального заказа</div>
+            <div class="cart-min-hint" id="cartHint">Еще 7 000 ₽ до минимального заказа</div>
         </div>
-        <div class="cart-total-badge" id="cartBadge">0 items</div>
+        <div class="cart-total-badge" id="cartBadge">0 товаров</div>
     </div>
 
     <script src="data.js"></script>
