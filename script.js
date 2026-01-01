@@ -298,8 +298,9 @@ function updateCartUI() {
 
         if (lvlInfo.isMinimum) {
             let remaining = 7000 - total;
-            hint.innerText = `Еще ${remaining.toLocaleString()} ₽ до минимального заказа`;
-            targetEl.innerText = `7,000 ₽`;
+            let remStr = remaining.toLocaleString('ru-RU').replace(/,/g, '');
+            hint.innerText = `Еще ${remStr} ₽ до минимального заказа`;
+            targetEl.innerText = `7,000 ₽`.replace(/,/g, '');
         } else {
             hint.innerText = `Ваш уровень отобразится в профиле`;
             targetEl.innerText = `${lvlInfo.nextThreshold.toLocaleString()} ₽`;
@@ -314,11 +315,15 @@ function updateCartUI() {
         }
         targetEl.style.display = 'block';
 
-        // Dynamic Icon Update (Tesla style)
-        const lvlFill = document.getElementById('cartLevelFill');
+        // Dynamic Icon Update (Tesla style SVG)
+        const fillRect = document.getElementById('fillLevelRect');
         const lvlPct = document.getElementById('cartLevelPct');
-        if (lvlFill && lvlPct) {
-            lvlFill.style.height = `${pct}%`;
+        if (fillRect && lvlPct) {
+            // Fill from y=40 (bottom) to y=0 (top)
+            let newY = 40 - (40 * (pct / 100));
+            let newH = 40 * (pct / 100);
+            fillRect.setAttribute('y', newY);
+            fillRect.setAttribute('height', newH);
             lvlPct.innerText = `${Math.round(pct)}%`;
         }
 
@@ -420,12 +425,12 @@ window.renderCartView = function () {
             <td>${item.factory !== '-' ? item.factory + ' / ' : ''}${item.quality} / ${item.volume}${item.unit}</td>
             <td>
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <button class="btn-primary btn-small" style="min-width:24px; padding:2px 6px; font-size:0.85rem;" onclick="changeQuantity(${i}, -1)">−</button>
+                    <button class="cart-qty-btn" onclick="changeQuantity(${i}, -1)">−</button>
                     <span style="min-width:30px; text-align:center; font-weight:700;">${item.quantity || 1}</span>
-                    <button class="btn-primary btn-small" style="min-width:24px; padding:2px 6px; font-size:0.85rem;" onclick="changeQuantity(${i}, 1)">+</button>
+                    <button class="cart-qty-btn" onclick="changeQuantity(${i}, 1)">+</button>
                 </div>
             </td>
-            <td style="font-weight:700;">${(item.totalPrice * (item.quantity || 1)).toLocaleString()} ₽</td>
+            <td style="font-weight:700;">${(item.totalPrice * (item.quantity || 1)).toLocaleString('ru-RU').replace(/,/g, '')} ₽</td>
             <td><button class="btn-primary btn-small" style="min-width:26px; width:26px; padding:4px; opacity:0.5; font-size:0.8rem;" onclick="removeFromCart(${i})"><i class="fa-solid fa-trash"></i></button></td>
         `;
         tbody.appendChild(tr);

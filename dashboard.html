@@ -163,8 +163,26 @@
     <!-- Floating Cart Progress Bar -->
     <div id="cartBar" class="cart-progress-container">
         <div class="cart-icon-box" id="cartLevelIcon">
-            <div class="level-fill" id="cartLevelFill"></div>
-            <span id="cartLevelPct">0%</span>
+            <svg viewBox="0 0 40 40" class="tesla-svg">
+                <!-- Top Curve -->
+                <path d="M8,12 Q20,8 32,12 L32,14 Q20,10 8,14 Z" fill="#333" />
+                <!-- Vertical Stem -->
+                <path d="M18,14 L22,14 L23,34 L20,38 L17,34 Z" fill="#333" />
+                <!-- Fill masking group -->
+                <g clip-path="url(#fillClip)">
+                    <path d="M8,12 Q20,8 32,12 L32,14 Q20,10 8,14 Z" class="fill-path" fill="var(--primary-color)" />
+                    <path d="M18,14 L22,14 L23,34 L20,38 L17,34 Z" class="fill-path" fill="var(--primary-color)" />
+                </g>
+                <defs>
+                    <clipPath id="fillClip">
+                        <rect id="fillLevelRect" x="0" y="40" width="40" height="0" />
+                    </clipPath>
+                </defs>
+            </svg>
+            <div class="pct-sub-container">
+                <i class="fa-solid fa-bolt bolt-icon"></i>
+                <span id="cartLevelPct">0%</span>
+            </div>
         </div>
         <div class="cart-info">
             <div class="cart-labels">
