@@ -1,20 +1,44 @@
 /* script.js */
 
 // --- 1. BAHUR Dynamic Branding ---
-const abstractIcons = ['fa-cube', 'fa-cubes', 'fa-shapes', 'fa-layer-group', 'fa-gem', 'fa-atom', 'fa-microchip'];
+const abstractIcons = [
+    'fa-cube', 'fa-cubes', 'fa-shapes', 'fa-layer-group', 'fa-gem', 'fa-atom', 'fa-microchip',
+    'fa-box', 'fa-boxes-stacked', 'fa-truck-fast', 'fa-parachute-box', 'fa-gift', 'fa-tags',
+    'fa-crown', 'fa-star', 'fa-trophy', 'fa-medal', 'fa-bolt', 'fa-fire', 'fa-droplet',
+    'fa-flask', 'fa-vial', 'fa-dna', 'fa-microscope', 'fa-brain', 'fa-lightbulb', 'fa-compass',
+    'fa-rocket', 'fa-shuttle-space', 'fa-planet-moon', 'fa-earth-americas', 'fa-satellite',
+    'fa-shield-halved', 'fa-lock', 'fa-key', 'fa-fingerprint', 'fa-eye', 'fa-ghost',
+    'fa-spider', 'fa-dragon', 'fa-hippo', 'fa-cat', 'fa-dog', 'fa-fish', 'fa-bug',
+    'fa-cloud', 'fa-moon', 'fa-sun', 'fa-umbrella', 'fa-snowflake', 'fa-wind', 'fa-water',
+    'fa-tree', 'fa-leaf', 'fa-seedling', 'fa-flower-tulip', 'fa-lemon', 'fa-pepper-hot',
+    'fa-mug-hot', 'fa-wine-glass', 'fa-glass-water', 'fa-bottle-droplet', 'fa-flask-vial',
+    'fa-gear', 'fa-gears', 'fa-wrench', 'fa-hammer', 'fa-screwdriver', 'fa-compass-drafting',
+    'fa-pen-nib', 'fa-palette', 'fa-icons', 'fa-music', 'fa-drum', 'fa-guitar', 'fa-headphones',
+    'fa-camera', 'fa-video', 'fa-film', 'fa-tv', 'fa-gamepad', 'fa-mobile-screen', 'fa-laptop',
+    'fa-server', 'fa-database', 'fa-wifi', 'fa-signal', 'fa-broadcast-tower', 'fa-tower-cell',
+    'fa-earth-europe', 'fa-earth-asia', 'fa-earth-africa', 'fa-earth-oceania', 'fa-mountain',
+    'fa-volcano', 'fa-anchor', 'fa-ship', 'fa-plane', 'fa-car', 'fa-bicycle', 'fa-landmark'
+];
 
 function initDynamicLogo() {
-    const logoEl = document.getElementById('dynamicLogoSidebar');
-    if (!logoEl) return;
+    const logoSidebar = document.getElementById('dynamicLogoSidebar');
+    const logoMain = document.getElementById('dynamicLogo');
+    if (!logoSidebar && !logoMain) return;
+
     let index = 0;
     setInterval(() => {
-        logoEl.classList.add('fade-out');
+        const elements = [logoSidebar, logoMain].filter(el => el !== null);
+        elements.forEach(el => el.classList.add('fade-out'));
+
         setTimeout(() => {
             index = (index + 1) % abstractIcons.length;
-            logoEl.className = `fa-solid ${abstractIcons[index]} dynamic-logo-icon brand-icon`;
-            logoEl.classList.remove('fade-out');
+            elements.forEach(el => {
+                const isSidebar = el.id === 'dynamicLogoSidebar';
+                el.className = `fa-solid ${abstractIcons[index]} dynamic-logo-icon ${isSidebar ? 'brand-icon' : ''}`;
+                el.classList.remove('fade-out');
+            });
         }, 500);
-    }, 5000);
+    }, 4000); // Slightly faster cycle for more variety
 }
 
 // --- 2. Product Logic & Categories ---
@@ -509,6 +533,7 @@ window.switchView = function (view) {
 // --- 3. Theme Logic (RESTORED CYCLE) ---
 const THEMES = [
     { id: 'base', icon: 'fa-sun', label: 'Minimal' },
+    { id: 'theme-cyberpunk', icon: 'fa-bolt', label: 'Neon' },
     { id: 'theme-winter', icon: 'fa-snowflake', label: 'Winter' }
 ];
 
@@ -540,8 +565,96 @@ function loadTheme() {
     setTheme(t);
 }
 
+// --- 4. Login Logic ---
+function maskPhone(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.startsWith('7')) value = value.substring(1);
+    if (value.startsWith('8')) value = value.substring(1);
+
+    let result = '+7 ';
+    if (value.length > 0) result += '(' + value.substring(0, 3);
+    if (value.length >= 4) result += ') ' + value.substring(3, 6);
+    if (value.length >= 7) result += '-' + value.substring(6, 8);
+    if (value.length >= 9) result += '-' + value.substring(8, 10);
+
+    input.value = result;
+}
+
+function initLogin() {
+    const loginForm = document.getElementById('loginForm');
+    const phoneInput = document.getElementById('phone');
+    const submitBtn = document.getElementById('submitBtn');
+    const registerLink = document.getElementById('registerLink');
+
+    if (registerLink) {
+        registerLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.setItem('userPhone', '+7 (999) 000-00-00'); // Default for guest
+            window.location.href = 'dashboard.html';
+        });
+    }
+
+    if (!loginForm || !phoneInput || !submitBtn) return;
+
+    phoneInput.addEventListener('input', (e) => {
+        let cursor = phoneInput.selectionStart;
+        let oldLen = phoneInput.value.length;
+        maskPhone(phoneInput);
+        let newLen = phoneInput.value.length;
+        cursor = cursor + (newLen - oldLen);
+        phoneInput.setSelectionRange(cursor, cursor);
+
+        // No longer disabling the button, per request to make it active
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const phoneValue = phoneInput.value || '+7 (999) 000-00-00';
+        localStorage.setItem('userPhone', phoneValue);
+
+        // Instant redirect
+        window.location.href = 'dashboard.html';
+    });
+}
+
+function initLogout() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (!logoutBtn) return;
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('userPhone');
+        window.location.href = 'index.html';
+    });
+}
+
+function checkUserSession() {
+    const userPhone = localStorage.getItem('userPhone');
+    const phoneDisplays = document.querySelectorAll('.display-user-phone');
+
+    if (userPhone && phoneDisplays.length > 0) {
+        phoneDisplays.forEach(el => {
+            el.innerText = userPhone;
+        });
+    }
+}
+
+function checkAuth() {
+    const userPhone = localStorage.getItem('userPhone');
+    const isDashboard = window.location.pathname.includes('dashboard.html');
+    const isLogin = window.location.pathname.includes('index.html') || window.location.pathname === '/';
+
+    if (isDashboard && !userPhone) {
+        window.location.href = 'index.html';
+    } else if (isLogin && userPhone) {
+        window.location.href = 'dashboard.html';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
     loadTheme();
     initDynamicLogo();
+    initLogin();
+    initLogout();
+    checkUserSession();
     if (document.getElementById('productsTableBody')) renderProducts();
 });

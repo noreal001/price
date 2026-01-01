@@ -335,7 +335,12 @@ body.theme-winter .input-wrapper:focus-within .input-icon {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s, background-color 0.3s;
+}
+
+.btn-primary.loading {
+    pointer-events: none;
+    opacity: 0.8;
 }
 
 body.theme-winter .btn-primary {

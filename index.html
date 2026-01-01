@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary" id="submitBtn" disabled>
+                <button type="submit" class="btn-primary" id="submitBtn">
                     Войти
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
@@ -55,7 +55,7 @@
             </div>
 
             <p class="footer-text">
-                Нет аккаунта? <a href="#">Регистрация</a>
+                Нет аккаунта? <a href="#" id="registerLink">Регистрация</a>
             </p>
         </div>
     </div>
@@ -63,12 +63,12 @@
     <div id="particles"></div>
 
     <div class="theme-switcher">
-        <button class="theme-btn theme-toggle-btn" title="Переключить тему">
+        <button class="theme-btn theme-toggle-btn" onclick="toggleTheme()" title="Переключить тему">
             <i class="fa-solid fa-sun"></i>
         </button>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=1.1"></script>
 </body>
 
 </html>
