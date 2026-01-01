@@ -1272,31 +1272,29 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
 
 .lvl-segmented-container {
     display: flex;
-    gap: 1px;
-    /* Even tighter gap */
-    height: 42px;
-    /* Much taller */
+    gap: 3px;
+    height: 24px;
     margin-bottom: 8px;
-    background: rgba(123, 240, 195, 0.03);
-    padding: 0px;
-    /* No padding */
-    border-radius: 0px;
-    /* Sharp container */
+    background: transparent;
+    /* Clean floating look */
+    padding: 0;
+    border-radius: 0;
     border: none;
-    /* Removed border around container */
+    width: 100%;
+    /* Ensure it spans the width */
 }
 
 .segment {
     flex: 1;
-    background: rgba(128, 128, 128, 0.15);
-    border-radius: 0px;
-    /* Sharp individual segments */
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(150, 150, 150, 0.25);
+    /* More neutral grey for visibility */
+    border-radius: 2px;
+    transition: all 0.4s ease;
 }
 
 .segment.filled {
     background: #7bf0c3;
-    box-shadow: 0 0 15px rgba(123, 240, 195, 0.9);
+    box-shadow: 0 0 10px rgba(123, 240, 195, 0.8);
 }
 
 .lvl-bottom-names {
@@ -1416,28 +1414,24 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
     font-weight: 500;
 }
 
-.progress-track {
+.segmented-track {
+    display: flex;
+    gap: 3px;
+    height: 12px;
     width: 100%;
-    height: 6px;
-    background: rgba(128, 128, 128, 0.2);
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
+    /* Fix: must have width to show segments */
+    background: transparent !important;
+    border: none !important;
+    overflow: visible !important;
 }
 
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    background: var(--primary-color);
-    border-radius: 10px;
-    transition: width 0.5s ease;
-    box-shadow: 0 0 10px var(--primary-color);
+.cart-progress-container .segmented-track .segment {
+    background: rgba(128, 128, 128, 0.3);
 }
 
-/* Orange acccent for progress if desired, or theme color */
-.cart-progress-container .progress-fill {
-    background: #ff9500;
-    box-shadow: 0 0 10px #ff9500;
+.cart-progress-container .segmented-track .segment.filled {
+    background: #7bf0c3;
+    box-shadow: 0 0 12px rgba(123, 240, 195, 0.8);
 }
 
 body.theme-cyberpunk .cart-progress-container .progress-fill {
@@ -1627,16 +1621,21 @@ body[class*="theme-"] .theme-toggle-btn:hover {
     color: var(--bg-color) !important;
     border: none !important;
     border-radius: 4px;
-    padding: 6px 12px;
+    padding: 3px 10px;
+    /* Ultra small */
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
+    /* Tiny text */
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    gap: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    height: auto;
+    min-height: 24px;
 }
 
 .checkout-btn:hover {
