@@ -314,6 +314,14 @@ function updateCartUI() {
         }
         targetEl.style.display = 'block';
 
+        // Dynamic Icon Update (Tesla style)
+        const lvlFill = document.getElementById('cartLevelFill');
+        const lvlPct = document.getElementById('cartLevelPct');
+        if (lvlFill && lvlPct) {
+            lvlFill.style.height = `${pct}%`;
+            lvlPct.innerText = `${Math.round(pct)}%`;
+        }
+
         // Make cart bar clickable
         bar.style.cursor = 'pointer';
         bar.onclick = function () {
