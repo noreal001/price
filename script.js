@@ -531,17 +531,19 @@ function updateCartUI() {
         fill.style.width = `${pct}%`;
         fill.style.background = currentMilestone.color;
 
+        // Target display & Remaining logic
+        const nextMilestone = ORDER_MILESTONES.find(m => m.threshold > total);
+
         if (total < 7000) {
             let remaining = 7000 - total;
             hint.innerText = `Еще ${remaining.toLocaleString()} ₽ до минимального заказа`;
+        } else if (nextMilestone) {
+            let remaining = nextMilestone.threshold - total;
+            hint.innerText = `${currentMilestone.emoji} ${getRandomSlogan(currentMilestone)} • Еще ${remaining.toLocaleString()} ₽ до уровня ${nextMilestone.threshold.toLocaleString()} ₽`;
         } else {
-            // Only update slogan if it hasn't been set for this total yet to prevent flickering
-            // Or just set it - usually updateCartUI is called on change
             hint.innerText = `${currentMilestone.emoji} ${getRandomSlogan(currentMilestone)}`;
         }
 
-        // Target display: show next milestone if not at top
-        const nextMilestone = ORDER_MILESTONES.find(m => m.threshold > total);
         if (nextMilestone) {
             targetEl.innerText = `${nextMilestone.threshold.toLocaleString()} ₽`;
             targetEl.style.display = 'block';
