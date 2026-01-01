@@ -332,7 +332,7 @@ function updateCartUI() {
             bagRect.setAttribute('height', h);
         }
 
-        generateSegments('mainBarSegmented', pct, 30);
+        generateSegments('mainBarSegmented', pct, 35);
 
         // Make cart bar clickable
         bar.style.cursor = 'pointer';
@@ -343,14 +343,14 @@ function updateCartUI() {
 
     // Update Profile Widget
     if (pLvlCurrent && pLvlNext && pLvlProg) {
-        pLvlCurrent.innerText = `Lvl ${lvlInfo.current}`;
-        pLvlNext.innerText = `Lvl ${lvlInfo.current + 1}`;
+        pLvlCurrent.innerText = `Уровень ${lvlInfo.current}`;
+        pLvlNext.innerText = `Уровень ${lvlInfo.current + 1}`;
 
         const currentSum = total.toLocaleString('ru-RU').replace(/,/g, ' ');
         const targetSum = lvlInfo.nextThreshold.toLocaleString('ru-RU').replace(/,/g, ' ');
         pLvlProg.innerText = `${currentSum} / ${targetSum}`;
 
-        generateSegments('profileLvlBar', pct, 25);
+        generateSegments('profileLvlBar', pct, 45);
     }
 
     // Sidebar Counter

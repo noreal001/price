@@ -1253,42 +1253,42 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
 }
 
 #profileLvlProgress {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: #fff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 10px rgba(123, 240, 195, 0.3);
 }
 
-.neon-bolt-small {
-    color: #39FF14;
-    font-size: 0.7rem;
-    filter: drop-shadow(0 0 5px rgba(57, 255, 20, 0.6));
+.neon-crown-small {
+    color: #7bf0c3;
+    font-size: 0.8rem;
+    filter: drop-shadow(0 0 5px rgba(123, 240, 195, 0.6));
 }
 
 .lvl-segmented-container {
     display: flex;
-    gap: 4px;
-    height: 22px;
+    gap: 2px;
+    /* Thinner gap for 'pushed together' look */
+    height: 30px;
     /* Taller segments */
     margin-bottom: 8px;
-    background: rgba(57, 255, 20, 0.03);
-    /* Subtle neon background track */
+    background: rgba(123, 240, 195, 0.03);
     padding: 3px;
-    border-radius: 6px;
-    border: 1px solid rgba(57, 255, 20, 0.05);
+    border-radius: 4px;
+    border: 1px solid rgba(123, 240, 195, 0.08);
 }
 
 .segment {
     flex: 1;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 10px;
-    /* Pill shape */
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 1px;
+    /* Sharper pillars */
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .segment.filled {
-    background: #39FF14;
-    box-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
+    background: #7bf0c3;
+    box-shadow: 0 0 12px rgba(123, 240, 195, 0.8);
 }
 
 .lvl-bottom-names {
@@ -1323,10 +1323,10 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
 }
 
 .designer-icon-wrapper {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     margin-bottom: 4px;
-    filter: drop-shadow(0 0 5px rgba(57, 255, 20, 0.2));
+    filter: drop-shadow(0 0 8px rgba(123, 240, 195, 0.3));
 }
 
 .bag-svg {
@@ -1338,31 +1338,32 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
 .pct-designer-container {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     margin-bottom: -2px;
 }
 
-.neon-bolt {
-    color: #39FF14;
-    font-size: 0.65rem;
-    filter: drop-shadow(0 0 5px rgba(57, 255, 20, 0.8));
+.neon-crown {
+    color: #7bf0c3;
+    font-size: 0.75rem;
+    filter: drop-shadow(0 0 8px rgba(123, 240, 195, 0.8));
 }
 
 #cartLevelPct {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 900;
     color: #fff;
     font-family: var(--font-main);
     letter-spacing: -0.5px;
+    text-shadow: 0 0 5px rgba(123, 240, 195, 0.3);
 }
 
 .segmented-track {
-    height: 14px;
-    gap: 4px;
+    height: 16px;
+    gap: 3px;
 }
 
 .neon-fill-path {
-    filter: drop-shadow(0 0 3px rgba(57, 255, 20, 0.8));
+    filter: drop-shadow(0 0 5px rgba(123, 240, 195, 0.9));
 }
 
 /* Circular quantity buttons in cart view */
