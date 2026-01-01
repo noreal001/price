@@ -18,7 +18,6 @@ const abstractIcons = [
 function initDynamicLogo() {
     const logoEl = document.getElementById('dynamicLogo') || document.getElementById('dynamicLogoSidebar');
     if (!logoEl) return;
-
     let index = 0;
     setInterval(() => {
         logoEl.classList.add('fade-out');
@@ -30,101 +29,203 @@ function initDynamicLogo() {
     }, 5000);
 }
 
-
 // --- 2. Product Logic & Categories ---
 let currentCategory = 'oils';
-let currentBrandFilter = 'All';
 
-const qualities = ["Top (Pure)", "Premium", "Standard"];
+// QUALITY LEVELS (Battery Logic)
+// Cycle: Q2 -> Q1 -> TOP -> Q2...
+const QUALITY_LEVELS = [
+    { label: "Q2", icon: "fa-battery-half", mult: 1.2, color: "q-mid" },           // Standard Mid (Orange/Yellow)
+    { label: "Q1", icon: "fa-battery-three-quarters", mult: 1.3, color: "q-mid-high" }, // High Mid (Lime Green)
+    { label: "TOP", icon: "fa-battery-full", mult: 1.4, color: "q-top" }           // Top (Green Glow)
+];
 
-// Category Switcher
+
 window.switchCategory = function (cat, btn) {
-    currentCategory = cat;
-    currentBrandFilter = 'All'; // Reset filter when switching
-
-    // UI Update
-    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-    // If inside wrapper, find btn ref might be tricky? No, btn passes 'this'
-    // If button is wrapped, ensure we target it correctly.
-    if (btn) btn.classList.add('active');
-
-    renderProducts();
-};
-
-window.toggleBrandDropdown = function (btn, event) {
-    // Only for oils, or if we want generic? The request was specifically for "Oils arrow".
-    // switch category to oils first if not already
-    if (currentCategory !== 'oils') switchCategory('oils', btn);
-
-    const dropdown = document.getElementById('oilsDropdown');
-    dropdown.classList.toggle('show');
-    event.stopPropagation();
-};
-
-window.filterByBrand = function (brand) {
-    currentBrandFilter = brand;
-    renderProducts();
-    // Close dropdown
-    const dropdown = document.getElementById('oilsDropdown');
-    dropdown.classList.remove('show');
-};
-
-// Close dropdown when clicking outside
-document.addEventListener('click', (e) => {
-    const dropdown = document.getElementById('oilsDropdown');
-    if (dropdown && dropdown.classList.contains('show')) {
-        dropdown.classList.remove('show');
+    try {
+        currentCategory = cat;
+        document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        renderProducts();
+    } catch (e) {
+        console.error("Error switching category:", e);
     }
-});
+};
+
+// --- FACTORY LOGIC ---
+const FACTORIES = ['Luzi', 'Eps', 'Seluz'];
+window.setFactory = function (rowId, factory) {
+    const row = document.getElementById(`row-${rowId}`);
+    if (!row) return;
+    row.querySelectorAll('.factory-option').forEach(el => el.classList.remove('active'));
+    const target = row.querySelector(`.factory-option[data-val="${factory}"]`);
+    if (target) target.classList.add('active');
+};
+
+function createFactoryControl(id) {
+    return `
+    <div class="factory-switch">
+        ${FACTORIES.map(f => `
+            <div class="factory-option ${f === 'Luzi' ? 'active' : ''}" 
+                 data-val="${f}" 
+                 onclick="setFactory(${id}, '${f}')">${f}</div>
+        `).join('')}
+    </div>`;
+}
+
+// --- BOTTLE LOGIC ---
+window.initBottleEvents = function (rowId) {
+    const bottle = document.getElementById(`bottle-${rowId}`);
+    if (!bottle) return;
+
+    const updateFill = (e) => {
+        const rect = bottle.getBoundingClientRect();
+        let clientY = e.clientY;
+        if (e.touches && e.touches[0]) clientY = e.touches[0].clientY;
+
+        let height = rect.bottom - clientY;
+        if (height < 0) height = 0;
+        if (height > rect.height) height = rect.height;
+
+        let percentage = (height / rect.height);
+
+        let vol = Math.round(percentage * 5000);
+        if (vol < 30) vol = 30;
+        vol = Math.round(vol / 50) * 50;
+
+        const fillEl = bottle.querySelector('.bottle-liquid');
+        fillEl.style.height = `${(vol / 5000) * 100}%`;
+
+        const label = document.getElementById(`vol-label-${rowId}`);
+        if (label) label.innerText = (vol >= 1000) ? (vol / 1000).toFixed(1) + 'kg' : vol + 'g';
+
+        updatePrice(rowId, bottle, vol);
+    };
+
+    bottle.addEventListener('mousedown', (e) => {
+        updateFill(e);
+        const onMove = (mv) => updateFill(mv);
+        const onUp = () => {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    });
+
+    bottle.addEventListener('touchstart', (e) => {
+        // e.preventDefault(); // Might block scrolling on mobile if covering large area
+        updateFill(e);
+        const onMove = (mv) => { mv.preventDefault(); updateFill(mv); }; // Prevent scroll ONLY when dragging bottle
+        const onEnd = () => {
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
+        };
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+    });
+};
+
+function createBottleControl(id) {
+    return `
+    <div class="bottle-wrapper">
+        <div class="bottle-container" id="bottle-${id}">
+            <div class="bottle-liquid" style="height: 5%;"></div>
+            <div class="bottle-glass"></div>
+        </div>
+        <div class="bottle-label" id="vol-label-${id}">30g</div>
+    </div>
+    `;
+}
+
+function createQualityButton(productId) {
+    const q = QUALITY_LEVELS[0];
+    return `
+        <button class="quality-btn ${q.color}" 
+                onclick="toggleQuality(${productId}, this)" 
+                data-q-index="0"
+                title="Change Quality">
+            <i class="fa-solid ${q.icon} quality-icon"></i>
+            <span class="quality-label">${q.label}</span>
+        </button>
+    `;
+}
+
+window.toggleQuality = function (id, btn) {
+    let currentIndex = parseInt(btn.getAttribute('data-q-index'));
+    let nextIndex = (currentIndex + 1) % QUALITY_LEVELS.length;
+    const nextQ = QUALITY_LEVELS[nextIndex];
+
+    btn.setAttribute('data-q-index', nextIndex);
+    btn.className = `quality-btn ${nextQ.color}`;
+    btn.querySelector('.quality-icon').className = `fa-solid ${nextQ.icon} quality-icon`;
+    btn.querySelector('.quality-label').innerText = nextQ.label;
+
+    updatePrice(id, btn);
+};
 
 function renderProducts() {
     const tbody = document.getElementById('productsTableBody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error("Table body not found!");
+        return;
+    }
     tbody.innerHTML = '';
 
-    // Select Data from data.js
     let data = [];
-    if (currentCategory === 'oils') {
-        data = catalogOils;
-        if (currentBrandFilter !== 'All') {
-            data = data.filter(p => p.brand === currentBrandFilter);
-        }
+    try {
+        if (currentCategory === 'oils') data = typeof catalogOils !== 'undefined' ? catalogOils : [];
+        else if (currentCategory === 'bottles') data = typeof catalogBottles !== 'undefined' ? catalogBottles : [];
+        else if (currentCategory === 'perfume') data = typeof catalogPerfume !== 'undefined' ? catalogPerfume : [];
+    } catch (e) {
+        console.error("Error accessing catalog data:", e);
+        return;
     }
-    else if (currentCategory === 'bottles') data = catalogBottles;
-    else if (currentCategory === 'perfume') data = catalogPerfume;
 
     data.forEach(product => {
         const tr = document.createElement('tr');
+        tr.id = `row-${product.id}`;
 
-        // Define controls
-        let brandHtml = `<span style="color:var(--text-color);">${product.brand || '-'}</span>`;
-        let qualHtml = `<select class="custom-select quality-select" onchange="updatePrice(${product.id}, this)">
-                            ${qualities.map((q, i) => `<option value="${1 + (2 - i) * 0.2}">${q}</option>`).join('')}
-                        </select>`;
+        let nameHtml = `<div class="p-name">${product.name}</div>`;
 
-        let min = 30, max = 5000, step = 5, val = 30;
+        // Factory (replacing Brand)
+        let factoryHtml = '';
+        if (currentCategory === 'oils' || currentCategory === 'perfume') {
+            factoryHtml = createFactoryControl(product.id);
+        } else {
+            factoryHtml = `<span style="color:#666;">-</span>`;
+        }
 
+        // Quality
+        let qualHtml = '';
         if (currentCategory === 'bottles') {
-            min = 10; max = 1000; step = 10; val = 50;
-            min = 10; // Override
-            brandHtml = `<span style="font-size:0.9rem; color:#999;">-</span>`;
-            qualHtml = `<span style="font-size:0.9rem; color:#999;">Standard</span><input type="hidden" class="quality-select" value="1">`;
+            qualHtml = `<span style="font-size:0.9rem; color:#999; display:flex; gap:5px; align-items:center;">
+                            <i class="fa-solid fa-box"></i> Std
+                        </span><input type="hidden" class="quality-data-hidden" value="1">`;
+        } else {
+            qualHtml = createQualityButton(product.id);
+        }
+
+        // Volume
+        let volHtml = '';
+        if (currentCategory === 'bottles') {
+            volHtml = `
+             <div class="volume-control">
+                <input type="range" class="volume-slider" min="10" max="1000" step="10" value="50" 
+                           oninput="handleVolumeInput(this, ${product.id})">
+                <span class="volume-label" id="vol-label-${product.id}">50 pcs</span>
+            </div>`;
+        } else {
+            volHtml = createBottleControl(product.id);
         }
 
         tr.innerHTML = `
-            <td class="product-name-cell">${product.name}</td>
-            <td>${brandHtml}</td>
+            <td class="product-name-cell">${nameHtml}</td>
+            <td>${factoryHtml}</td>
             <td>${qualHtml}</td>
-            <td style="width: 200px;">
-                <div class="volume-control">
-                    <input type="range" class="volume-slider" min="${min}" max="${max}" step="${step}" value="${val}" 
-                           oninput="handleVolumeInput(this, ${product.id})">
-                    <span class="volume-label" id="vol-label-${product.id}">${val}</span>
-                </div>
-            </td>
-            <td>
-                <span class="price-tag" id="price-${product.id}">...</span>
-            </td>
+            <td><span class="cost-tag" id="cost-${product.id}">...</span></td>
+            <td style="min-width: 80px;">${volHtml}</td>
+            <td><span class="price-tag" id="price-${product.id}">...</span></td>
             <td>
                 <button class="btn-primary btn-small" onclick="addToCart('${product.name}')">
                     <i class="fa-solid fa-plus"></i>
@@ -132,103 +233,75 @@ function renderProducts() {
             </td>
         `;
         tbody.appendChild(tr);
-        // Init logic
-        handleVolumeInput(tr.querySelector('.volume-slider'), product.id);
+
+        if (currentCategory !== 'bottles') {
+            initBottleEvents(product.id);
+            setTimeout(() => {
+                const b = document.getElementById(`bottle-${product.id}`);
+                if (b) updatePrice(product.id, b, 30);
+            }, 0);
+        } else {
+            handleVolumeInput(tr.querySelector('.volume-slider'), product.id);
+        }
     });
 }
 
-// Logic: Smart Slider & Price
 window.handleVolumeInput = function (slider, id) {
     let val = parseInt(slider.value);
-
-    // Snapping Logic
-    if (currentCategory !== 'bottles') {
-        if (val > 500) val = Math.round(val / 500) * 500;
-        if (val === 0) val = 30; // Min bound safety
-    } else {
-        if (val > 100) val = Math.round(val / 50) * 50;
-    }
-
-    // Label Logic
+    if (val > 100) val = Math.round(val / 50) * 50;
     const label = document.getElementById(`vol-label-${id}`);
-    if (currentCategory === 'bottles') {
-        label.innerText = val + ' pcs';
-    } else {
-        if (val >= 1000) label.innerText = (val / 1000).toFixed(1) + ' kg';
-        else label.innerText = val + ' g';
-    }
-
+    label.innerText = val + ' pcs';
     updatePrice(id, slider, val);
 };
 
 window.updatePrice = function (id, sourceElement, overrideVol) {
-    const row = sourceElement.closest('tr');
-    const qualityEl = row.querySelector('.quality-select');
-    const qualityMult = qualityEl ? parseFloat(qualityEl.value) : 1;
+    const row = document.getElementById(`row-${id}`);
+    if (!row) return;
 
-    let vol = overrideVol;
-    if (vol === undefined) {
-        const slider = row.querySelector('.volume-slider');
-        vol = parseInt(slider.value);
-        // Apply snap logic for recalc consistency
-        if (currentCategory !== 'bottles' && vol > 500) vol = Math.round(vol / 500) * 500;
+    let qualityMult = 1;
+    const qBtn = row.querySelector('.quality-btn');
+    if (qBtn) {
+        const idx = parseInt(qBtn.getAttribute('data-q-index'));
+        qualityMult = QUALITY_LEVELS[idx].mult;
+    } else {
+        const qInput = row.querySelector('.quality-data-hidden');
+        if (qInput) qualityMult = parseFloat(qInput.value);
     }
 
-    // Find Product in correct catalog
+    let vol = overrideVol;
+
     let product;
     if (currentCategory === 'oils') product = catalogOils.find(p => p.id === id);
     else if (currentCategory === 'bottles') product = catalogBottles.find(p => p.id === id);
-    else if (currentCategory === 'perfume') product = catalogPerfume.find(p => p.id === id); // Fix: use perfume catalog
+    else if (currentCategory === 'perfume') product = catalogPerfume.find(p => p.id === id);
 
     if (!product) return;
 
-    // Price Formula
-    let finalPrice = 0;
+    let costPerUnit = 0;
+    let finalSum = 0;
+
     if (currentCategory === 'bottles') {
-        finalPrice = product.basePrice * vol;
+        costPerUnit = product.basePrice;
+        finalSum = costPerUnit * vol;
     } else {
-        finalPrice = Math.round(product.basePrice * (vol / 10) * qualityMult);
+        // Oils: Cost per 1g
+        let costPerGram = (product.basePrice / 10) * qualityMult;
+        costPerUnit = costPerGram;
+        finalSum = Math.round(costPerGram * vol);
     }
 
-    row.querySelector('.price-tag').innerText = `₽ ${finalPrice.toLocaleString()}`;
+    // Update Cost Cell
+    const costTag = row.querySelector('.cost-tag');
+    if (costTag) {
+        let displayCost = costPerUnit.toFixed(1);
+        if (displayCost.endsWith('.0')) displayCost = parseInt(displayCost);
+        costTag.innerText = displayCost + ' ₽';
+    }
+
+    // Update Sum Cell
+    const priceTag = row.querySelector('.price-tag');
+    if (priceTag) priceTag.innerText = `₽ ${finalSum.toLocaleString()}`;
 };
-
-function populateDropdown() {
-    const dropdown = document.getElementById('oilsDropdown');
-    if (!dropdown) return;
-
-    // Keep 'All' option
-    dropdown.innerHTML = `<div class="dropdown-item" onclick="filterByBrand('All')">Все бренды</div>`;
-
-    BRANDS_LIST.forEach(brand => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        item.innerText = brand;
-        item.onclick = () => filterByBrand(brand);
-        dropdown.appendChild(item);
-    });
-}
-
-window.addToCart = function (name) { alert(`Товар "${name}" добавлен в корзину!`); };
-window.switchView = function (viewName) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        if (btn.onclick && btn.onclick.toString().includes(viewName)) btn.classList.add('active');
-    });
-
-    const title = document.getElementById('pageTitle');
-    document.getElementById('view-stats').style.display = 'none';
-    document.getElementById('view-products').style.display = 'none';
-
-    if (viewName === 'stats') {
-        document.getElementById('view-stats').style.display = 'grid';
-        if (title) title.innerText = 'Главная';
-    } else if (viewName === 'products') {
-        document.getElementById('view-products').style.display = 'block';
-        if (title) title.innerText = 'Каталог';
-        renderProducts();
-    }
-}
 
 
 // --- 3. Theme Logic ---
@@ -275,6 +348,19 @@ function startParticles(theme) {
     clearInterval(particleInterval);
     if (theme === 'theme-winter') particleInterval = setInterval(() => createSnowflake(container), 200);
 }
+// ... user login functions omitted for brevity but presumed same ...
+function checkSession() {
+    const protectedRoutes = ['dashboard.html'];
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    if (protectedRoutes.includes(currentPage) && !isLoggedIn) window.location.href = 'index.html';
+    if ((currentPage === 'index.html' || currentPage === '') && isLoggedIn) window.location.href = 'dashboard.html';
+}
+function loginUser(method) {
+    if (method === 'phone') { const btn = document.querySelector('.btn-primary'); if (btn) { btn.innerText = 'Вход...'; btn.disabled = true; } }
+    setTimeout(() => { localStorage.setItem('isLoggedIn', 'true'); window.location.href = 'dashboard.html'; }, 1000);
+}
+function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = 'index.html'; }
 function createSnowflake(container) {
     const flake = document.createElement('div');
     flake.classList.add('snowflake');
@@ -289,26 +375,31 @@ function createSnowflake(container) {
     setTimeout(() => flake.remove(), 5000);
 }
 
+window.addToCart = function (name) { alert(`Товар "${name}" добавлен в корзину!`); };
+window.switchView = function (viewName) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        if (btn.onclick && btn.onclick.toString().includes(viewName)) btn.classList.add('active');
+    });
 
-// --- 4. Init ---
-function checkSession() {
-    const protectedRoutes = ['dashboard.html'];
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    if (protectedRoutes.includes(currentPage) && !isLoggedIn) window.location.href = 'index.html';
-    if ((currentPage === 'index.html' || currentPage === '') && isLoggedIn) window.location.href = 'dashboard.html';
+    const title = document.getElementById('pageTitle');
+    document.getElementById('view-stats').style.display = 'none';
+    document.getElementById('view-products').style.display = 'none';
+
+    if (viewName === 'stats') {
+        document.getElementById('view-stats').style.display = 'grid';
+        if (title) title.innerText = 'Главная';
+    } else if (viewName === 'products') {
+        document.getElementById('view-products').style.display = 'block';
+        if (title) title.innerText = 'Каталог';
+        renderProducts();
+    }
 }
-function loginUser(method) {
-    if (method === 'phone') { const btn = document.querySelector('.btn-primary'); if (btn) { btn.innerText = 'Вход...'; btn.disabled = true; } }
-    setTimeout(() => { localStorage.setItem('isLoggedIn', 'true'); window.location.href = 'dashboard.html'; }, 1000);
-}
-function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = 'index.html'; }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadTheme();
     checkSession();
     initDynamicLogo();
-    populateDropdown(); // Fill brand list
 
     const phoneInput = document.getElementById('phone');
     const submitBtn = document.getElementById('submitBtn');

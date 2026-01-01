@@ -757,6 +757,169 @@ body[class*="theme-"] .custom-select {
     font-variant-numeric: tabular-nums;
 }
 
+
+/* --- FACTORY SWITCH (Compact Segmented Control) --- */
+.factory-switch {
+    display: flex;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50px;
+    padding: 2px 4px;
+    width: fit-content;
+    border: 1px solid var(--border-color);
+    transform: scale(0.9);
+    transform-origin: left center;
+}
+
+body[class*="theme-"] .factory-switch {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.factory-option {
+    padding: 4px 10px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #999;
+    transition: all 0.3s ease;
+}
+
+.factory-option:hover {
+    color: var(--text-color);
+}
+
+.factory-option.active {
+    background: var(--card-bg);
+    color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body.theme-winter .factory-option.active {
+    background: #333;
+    color: white;
+}
+
+body[class*="theme-"] .factory-option.active {
+    background: var(--primary-color);
+    color: black;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* --- PREMIUM UI BOTTLE (Capsule/Icon Style) --- */
+.bottle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.bottle-container {
+    width: 24px;
+    height: 64px;
+    position: relative;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    /* Smooth rounded rect, clean UI style */
+    cursor: ns-resize;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+body[class*="theme-"] .bottle-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Bottle Liquid */
+.bottle-liquid {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--primary-color);
+    opacity: 0.9;
+    transition: height 0.1s linear;
+    pointer-events: none;
+}
+
+/* Glass Reflection - clean vertical reflection */
+.bottle-glass {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.15) 0%, transparent 40%, rgba(255, 255, 255, 0.05) 100%);
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.05);
+    /* very soft inner shadow */
+}
+
+.bottle-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    width: 50px;
+    text-align: right;
+    color: var(--text-color);
+}
+
+
+/* --- COLORED BATTERY --- */
+.quality-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-main);
+    transition: all 0.2s;
+    min-width: 90px;
+}
+
+.quality-icon {
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+.quality-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* High contrast for label in dark modes */
+
+.q-low .quality-icon {
+    color: #ff3b30 !important;
+}
+
+/* Red */
+.q-mid .quality-icon {
+    color: #ffcc00 !important;
+}
+
+/* Orange/Yellow */
+.q-mid-high .quality-icon {
+    color: #ccff00 !important;
+    text-shadow: 0 0 5px #ccff00;
+}
+
+/* Lime */
+.q-top .quality-icon {
+    color: #34c759 !important;
+    text-shadow: 0 0 8px #34c759;
+}
+
+/* Green */
+.q-top:hover {
+    border-color: #34c759;
+}
+
+
 /* --- Catalog Header & Tabs --- */
 .catalog-header {
     display: flex;
@@ -769,6 +932,7 @@ body[class*="theme-"] .custom-select {
     display: flex;
     gap: 15px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 /* Tab Wrapper for Dropdown */
@@ -967,4 +1131,67 @@ body.theme-cyberpunk .theme-btn.active {
 body.theme-winter .theme-switcher {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ================= ADAPTIVE DESKTOP ================= */
+@media (max-width: 768px) {
+
+    /* Collapse Sidebar to Icons */
+    .sidebar {
+        width: 70px;
+        padding: 24px 10px;
+    }
+
+    .sidebar .brand-name,
+    .sidebar .nav-item span,
+    .sidebar-footer span {
+        display: none;
+    }
+
+    .sidebar-header {
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .nav-item {
+        justify-content: center;
+        padding: 12px;
+    }
+
+    .nav-item i {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    /* Layout Adjustments */
+    .main-content {
+        padding: 20px;
+        width: calc(100% - 70px);
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .large-card {
+        grid-column: span 1;
+    }
+
+    /* Table Scroll */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .products-table {
+        min-width: 600px;
+        /* Ensure table keeps shape */
+    }
+
+    /* Login Mobile */
+    .login-card {
+        width: 90%;
+        max-width: none;
+        padding: 24px;
+    }
 }
