@@ -235,6 +235,7 @@ let cart = [];
 const ORDER_MILESTONES = [
     {
         threshold: 0,
+        name: "Старт",
         emoji: "🛒",
         color: '#999',
         slogans: [
@@ -252,6 +253,7 @@ const ORDER_MILESTONES = [
     },
     {
         threshold: 7000,
+        name: "Минимальный",
         emoji: "✅",
         color: '#34c759',
         slogans: [
@@ -269,6 +271,7 @@ const ORDER_MILESTONES = [
     },
     {
         threshold: 25000,
+        name: "Бронза",
         emoji: "📦",
         color: '#007aff',
         slogans: [
@@ -291,6 +294,7 @@ const ORDER_MILESTONES = [
     },
     {
         threshold: 50000,
+        name: "Серебро",
         emoji: "🎯",
         color: '#5856d6',
         slogans: [
@@ -316,6 +320,7 @@ const ORDER_MILESTONES = [
     },
     {
         threshold: 100000,
+        name: "Золото",
         emoji: "🌟",
         color: '#ff9500',
         slogans: [
@@ -343,6 +348,7 @@ const ORDER_MILESTONES = [
     },
     {
         threshold: 500000,
+        name: "Платина",
         emoji: "🔥",
         color: '#ff2d55',
         slogans: [
@@ -375,6 +381,7 @@ const ORDER_MILESTONES = [
     },
     {
         threshold: 1000000,
+        name: "Бриллиант",
         emoji: "💎",
         color: '#af52de',
         slogans: [
@@ -412,6 +419,7 @@ const ORDER_MILESTONES = [
     },
     {
         threshold: 2000000,
+        name: "Лидер",
         emoji: "👑",
         color: '#ffd60a',
         slogans: [
@@ -536,12 +544,12 @@ function updateCartUI() {
 
         if (total < 7000) {
             let remaining = 7000 - total;
-            hint.innerText = `Еще ${remaining.toLocaleString()} ₽ до минимального заказа`;
+            hint.innerText = `[${currentMilestone.name}] Еще ${remaining.toLocaleString()} ₽ до минимального заказа`;
         } else if (nextMilestone) {
             let remaining = nextMilestone.threshold - total;
-            hint.innerText = `${currentMilestone.emoji} ${getRandomSlogan(currentMilestone)} • Еще ${remaining.toLocaleString()} ₽ до уровня ${nextMilestone.threshold.toLocaleString()} ₽`;
+            hint.innerText = `${currentMilestone.emoji} [${currentMilestone.name}] ${getRandomSlogan(currentMilestone)} • Еще ${remaining.toLocaleString()} ₽ до уровня ${nextMilestone.name} (${nextMilestone.threshold.toLocaleString()} ₽)`;
         } else {
-            hint.innerText = `${currentMilestone.emoji} ${getRandomSlogan(currentMilestone)}`;
+            hint.innerText = `${currentMilestone.emoji} [${currentMilestone.name}] ${getRandomSlogan(currentMilestone)}`;
         }
 
         if (nextMilestone) {
