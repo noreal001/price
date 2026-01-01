@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в систему</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="brand-logo">
+                <i class="fa-solid fa-cube"></i>
+            </div>
+
+            <h1>Добро пожаловать</h1>
+            <p class="subtitle">Введите номер телефона для входа</p>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="phone">Номер телефона</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <input type="tel" id="phone" placeholder="+7 (999) 000-00-00" autocomplete="tel">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn" disabled>
+                    Войти
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>или</span>
+            </div>
+
+            <div class="social-login">
+                <button class="social-btn google" title="Войти через Google">
+                    <i class="fa-brands fa-google"></i>
+                </button>
+                <button class="social-btn telegram" title="Войти через Telegram">
+                    <i class="fa-brands fa-telegram"></i>
+                </button>
+                <button class="social-btn apple" title="Войти через Apple ID">
+                    <i class="fa-brands fa-apple"></i>
+                </button>
+            </div>
+
+            <p class="footer-text">
+                Нет аккаунта? <a href="#">Регистрация</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
