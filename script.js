@@ -138,7 +138,14 @@ window.switchView = function (viewName) {
 const THEMES = [
     { id: 'base', icon: 'fa-sun', label: 'Minimal' },
     { id: 'theme-winter', icon: 'fa-snowflake', label: 'Winter' },
-    { id: 'theme-cyberpunk', icon: 'fa-bolt', label: 'Cyberpunk' }
+    { id: 'theme-cyberpunk', icon: 'fa-bolt', label: 'Cyberpunk' },
+    { id: 'theme-blue', icon: 'fa-droplet', label: 'Blue' },
+    { id: 'theme-purple', icon: 'fa-hat-wizard', label: 'Purple' },
+    { id: 'theme-yellow', icon: 'fa-lightbulb', label: 'Yellow' },
+    { id: 'theme-red', icon: 'fa-fire', label: 'Red' },
+    { id: 'theme-orange', icon: 'fa-carrot', label: 'Orange' },
+    { id: 'theme-lilac', icon: 'fa-heart', label: 'Lilac' },
+    { id: 'theme-green', icon: 'fa-leaf', label: 'Green' }
 ];
 
 function toggleTheme() {

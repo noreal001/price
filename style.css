@@ -40,23 +40,79 @@ body.theme-winter {
     --table-border: #333;
 }
 
-/* Theme: Cyberpunk (Sleek Minimal) */
-body.theme-cyberpunk {
+/* --- SHARED DARK NEON BASE --- */
+body[class*="theme-"]:not(.theme-winter) {
     --bg-color: #030303;
     --text-color: #eeeeee;
-    --primary-color: #00ff9d;
     --secondary-color: #111;
-    --border-color: #00ff9d;
     --card-bg: rgba(5, 5, 5, 0.95);
     --input-bg: #0a0a0a;
-    --shadow-soft: 0 0 20px rgba(0, 255, 157, 0.15);
     --particle-color: transparent;
     --sidebar-bg: #050505;
+    --table-header-bg: rgba(255, 255, 255, 0.05);
+    --table-row-hover: rgba(255, 255, 255, 0.02);
+}
 
-    --table-header-bg: rgba(0, 255, 157, 0.05);
-    --table-row-hover: rgba(0, 255, 157, 0.02);
+/* Theme: Cyberpunk (Mint) */
+body.theme-cyberpunk {
+    --primary-color: #00ff9d;
+    --border-color: #00ff9d;
+    --shadow-soft: 0 0 20px rgba(0, 255, 157, 0.15);
     --table-border: #00442a;
 }
+
+/* New Color Themes */
+body.theme-blue {
+    --primary-color: #0088ff;
+    --border-color: #0088ff;
+    --shadow-soft: 0 0 20px rgba(0, 136, 255, 0.15);
+    --table-border: #002244;
+}
+
+body.theme-purple {
+    --primary-color: #9d00ff;
+    --border-color: #9d00ff;
+    --shadow-soft: 0 0 20px rgba(157, 0, 255, 0.15);
+    --table-border: #2a0044;
+}
+
+body.theme-yellow {
+    --primary-color: #ffea00;
+    --border-color: #ffea00;
+    --shadow-soft: 0 0 20px rgba(255, 234, 0, 0.15);
+    --table-border: #443e00;
+    --text-color: #fff;
+    /* Ensure text visible */
+}
+
+body.theme-red {
+    --primary-color: #ff003c;
+    --border-color: #ff003c;
+    --shadow-soft: 0 0 20px rgba(255, 0, 60, 0.15);
+    --table-border: #440010;
+}
+
+body.theme-orange {
+    --primary-color: #ff8800;
+    --border-color: #ff8800;
+    --shadow-soft: 0 0 20px rgba(255, 136, 0, 0.15);
+    --table-border: #442200;
+}
+
+body.theme-lilac {
+    --primary-color: #e056fd;
+    --border-color: #e056fd;
+    --shadow-soft: 0 0 20px rgba(224, 86, 253, 0.15);
+    --table-border: #3a1542;
+}
+
+body.theme-green {
+    --primary-color: #39ff14;
+    --border-color: #39ff14;
+    --shadow-soft: 0 0 20px rgba(57, 255, 20, 0.15);
+    --table-border: #0e4405;
+}
+
 
 * {
     margin: 0;
@@ -87,46 +143,58 @@ body.theme-winter .card {
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-body.theme-cyberpunk {
+/* Common Background Pattern for Neon Themes */
+body[class*="theme-"]:not(.theme-winter) {
     background:
         repeating-linear-gradient(0deg,
             transparent,
             transparent 2px,
-            rgba(0, 255, 157, 0.02) 2px,
-            rgba(0, 255, 157, 0.02) 4px),
+            rgba(255, 255, 255, 0.02) 2px,
+            rgba(255, 255, 255, 0.02) 4px),
         #050505;
 }
 
-body.theme-cyberpunk .card {
+/* Card Styles for Neon Themes */
+body[class*="theme-"]:not(.theme-winter) .card {
     border: 1px solid var(--border-color);
-    box-shadow: 0 0 15px rgba(0, 255, 157, 0.1);
+    box-shadow: 0 0 15px var(--shadow-soft);
     border-radius: 4px;
 }
 
-body.theme-cyberpunk .btn-primary {
+body[class*="theme-"]:not(.theme-winter) .btn-primary {
     background: transparent;
     border: 1px solid var(--primary-color);
     color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(0, 255, 157, 0.1);
+    box-shadow: 0 0 10px var(--shadow-soft);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-body.theme-cyberpunk .btn-primary:hover {
+body[class*="theme-"]:not(.theme-winter) .btn-primary:hover {
     background: var(--primary-color);
     color: black;
     box-shadow: 0 0 20px var(--primary-color);
 }
 
-body.theme-cyberpunk .input-icon {
+body[class*="theme-"]:not(.theme-winter) .input-icon {
     color: var(--primary-color);
 }
 
-body.theme-cyberpunk .nav-item.active {
+body[class*="theme-"]:not(.theme-winter) .nav-item.active {
     box-shadow: inset 2px 0 0 var(--primary-color);
-    background: rgba(0, 255, 157, 0.05);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--primary-color);
     border-right: none;
+}
+
+body[class*="theme-"]:not(.theme-winter) .theme-btn.active {
+    color: black;
+    background: var(--primary-color);
+}
+
+body[class*="theme-"]:not(.theme-winter) .theme-switcher {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--primary-color);
 }
 
 
@@ -154,10 +222,16 @@ body.theme-cyberpunk .nav-item.active {
     border-radius: var(--card-radius);
 }
 
-body.theme-winter .login-card,
-body.theme-cyberpunk .login-card {
-    border-radius: var(--card-radius);
+body[class*="theme-"] .login-card {
+    border-radius: 4px;
 }
+
+/* Winter overrides */
+body.theme-winter .login-card {
+    border-radius: 16px;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
 
 .brand-logo {
     font-size: 2.5rem;
@@ -169,7 +243,6 @@ body.theme-cyberpunk .login-card {
     gap: 15px;
 }
 
-/* Dynamic Logo Animation Class */
 .dynamic-logo-icon {
     transition: opacity 0.5s ease-in-out;
 }
@@ -195,8 +268,7 @@ body.theme-cyberpunk .login-card {
     margin-bottom: 32px;
 }
 
-body.theme-winter .subtitle,
-body.theme-cyberpunk .subtitle {
+body[class*="theme-"] .subtitle {
     color: rgba(255, 255, 255, 0.85);
 }
 
@@ -214,8 +286,7 @@ body.theme-cyberpunk .subtitle {
     color: #333;
 }
 
-body.theme-winter .input-group label,
-body.theme-cyberpunk .input-group label {
+body[class*="theme-"] .input-group label {
     color: rgba(255, 255, 255, 0.9);
 }
 
@@ -254,9 +325,8 @@ body:not([class*="theme-"]) input[type="tel"]:focus {
     box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
-body.theme-cyberpunk input[type="tel"]:focus {
-    box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
-    border-color: #00ff9d;
+body[class*="theme-"]:not(.theme-winter) input[type="tel"]:focus {
+    box-shadow: 0 0 15px var(--shadow-soft);
 }
 
 input[type="tel"]:focus+.input-icon,
@@ -301,8 +371,7 @@ body.theme-winter .btn-primary {
     box-shadow: none !important;
 }
 
-body.theme-winter .btn-primary:disabled,
-body.theme-cyberpunk .btn-primary:disabled {
+body[class*="theme-"] .btn-primary:disabled {
     background: #333;
     color: #666;
     border: 1px solid #444;
@@ -330,8 +399,7 @@ body.theme-cyberpunk .btn-primary:disabled {
     z-index: 0;
 }
 
-body.theme-winter .divider::before,
-body.theme-cyberpunk .divider::before {
+body[class*="theme-"] .divider::before {
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -366,8 +434,7 @@ body.theme-cyberpunk .divider::before {
     justify-content: center;
 }
 
-body.theme-winter .social-btn,
-body.theme-cyberpunk .social-btn {
+body[class*="theme-"] .social-btn {
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.15);
     color: white;
@@ -379,8 +446,7 @@ body.theme-cyberpunk .social-btn {
     transform: translateY(-2px);
 }
 
-body.theme-winter .social-btn:hover,
-body.theme-cyberpunk .social-btn:hover {
+body[class*="theme-"] .social-btn:hover {
     border-color: var(--primary-color);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 10px var(--primary-color);
@@ -391,8 +457,7 @@ body.theme-cyberpunk .social-btn:hover {
     color: #666;
 }
 
-body.theme-winter .footer-text,
-body.theme-cyberpunk .footer-text {
+body[class*="theme-"] .footer-text {
     color: rgba(255, 255, 255, 0.7);
 }
 
@@ -464,8 +529,7 @@ body.theme-winter .footer-text a {
     cursor: pointer;
 }
 
-body.theme-winter .nav-item,
-body.theme-cyberpunk .nav-item {
+body[class*="theme-"] .nav-item {
     color: rgba(255, 255, 255, 0.6);
 }
 
@@ -475,8 +539,7 @@ body.theme-cyberpunk .nav-item {
     color: var(--text-color);
 }
 
-body.theme-winter .nav-item:hover,
-body.theme-cyberpunk .nav-item:hover {
+body[class*="theme-"] .nav-item:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
 }
@@ -589,8 +652,7 @@ body.theme-winter .avatar {
     color: var(--text-color);
 }
 
-body.theme-winter .stat-icon,
-body.theme-cyberpunk .stat-icon {
+body[class*="theme-"] .stat-icon {
     background: rgba(255, 255, 255, 0.1);
     color: white;
 }
@@ -602,8 +664,7 @@ body.theme-cyberpunk .stat-icon {
     font-weight: 500;
 }
 
-body.theme-winter .stat-info h3,
-body.theme-cyberpunk .stat-info h3 {
+body[class*="theme-"] .stat-info h3 {
     color: rgba(255, 255, 255, 0.6);
 }
 
@@ -658,7 +719,6 @@ body.theme-cyberpunk .stat-info h3 {
     color: var(--text-color);
 }
 
-/* Custom In-Table Selects */
 .custom-select {
     width: 100%;
     padding: 8px 12px;
@@ -682,8 +742,7 @@ body.theme-cyberpunk .stat-info h3 {
     border-color: var(--primary-color);
 }
 
-body.theme-winter .custom-select,
-body.theme-cyberpunk .custom-select {
+body[class*="theme-"] .custom-select {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -789,9 +848,4 @@ body.theme-cyberpunk .theme-btn.active {
 body.theme-winter .theme-switcher {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.15);
-}
-
-body.theme-cyberpunk .theme-switcher {
-    background: rgba(0, 0, 0, 0.5);
-    border-color: #00ff9d;
 }
