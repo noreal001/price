@@ -183,6 +183,8 @@ body[class*="theme-"]:not(.theme-winter) .theme-btn.active {
 }
 
 body[class*="theme-"]:not(.theme-winter) .theme-switcher {
+    -webkit-appearance: none;
+    appearance: none;
     background: rgba(0, 0, 0, 0.5);
     border-color: var(--primary-color);
 }
@@ -695,8 +697,8 @@ body[class*="theme-"] .stat-info h3 {
     cursor: pointer;
     outline: none;
     transition: all 0.2s;
-    appearance: none;
     -webkit-appearance: none;
+    appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
@@ -731,6 +733,7 @@ body[class*="theme-"] .custom-select {
 .volume-slider {
     flex: 1;
     -webkit-appearance: none;
+    appearance: none;
     height: 4px;
     background: var(--border-color);
     border-radius: 2px;
@@ -740,6 +743,7 @@ body[class*="theme-"] .custom-select {
 
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
+    appearance: none;
     width: 14px;
     height: 14px;
     border-radius: 50%;
@@ -1253,10 +1257,11 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
 }
 
 #profileLvlProgress {
-    font-size: 0.95rem;
-    font-weight: 800;
-    color: #fff;
-    text-shadow: 0 0 10px rgba(123, 240, 195, 0.3);
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--text-color);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
 }
 
 .neon-crown-small {
@@ -1272,18 +1277,21 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
     height: 30px;
     /* Taller segments */
     margin-bottom: 8px;
-    background: rgba(123, 240, 195, 0.03);
+    background: rgba(123, 240, 195, 0.05);
+    /* Slightly darker track */
     padding: 3px;
     border-radius: 4px;
-    border: 1px solid rgba(123, 240, 195, 0.08);
+    border: 1px solid rgba(123, 240, 195, 0.1);
 }
 
 .segment {
     flex: 1;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(128, 128, 128, 0.15);
+    /* More visible on white */
     border-radius: 1px;
     /* Sharper pillars */
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 0, 0, 0.02);
 }
 
 .segment.filled {
@@ -1296,8 +1304,8 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
     justify-content: space-between;
     font-size: 0.75rem;
     font-weight: 700;
-    opacity: 0.6;
-    color: #fff;
+    opacity: 0.8;
+    color: var(--text-color);
 }
 
 /* Expanded Cart Bar Styles */
@@ -1308,53 +1316,51 @@ body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
 
 /* Designer Cart Icon Box */
 .cart-icon-designer-box {
-    width: 64px;
+    min-width: 100px;
     height: 64px;
-    background: #000;
-    border-radius: 12px;
+    background: transparent;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    /* Horizontal alignment */
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 12px;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.8);
     flex-shrink: 0;
 }
 
 .designer-icon-wrapper {
-    width: 34px;
-    height: 34px;
-    margin-bottom: 4px;
-    filter: drop-shadow(0 0 8px rgba(123, 240, 195, 0.3));
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .bag-svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 
 .pct-designer-container {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-bottom: -2px;
+    justify-content: center;
 }
 
-.neon-crown {
-    color: #7bf0c3;
-    font-size: 0.75rem;
-    filter: drop-shadow(0 0 8px rgba(123, 240, 195, 0.8));
+.pct-designer-row {
+    display: flex;
+    align-items: center;
 }
 
 #cartLevelPct {
-    font-size: 0.85rem;
-    font-weight: 900;
-    color: #fff;
+    font-size: 1rem;
+    /* Slightly larger */
+    font-weight: 950;
+    color: #7bf0c3;
     font-family: var(--font-main);
     letter-spacing: -0.5px;
-    text-shadow: 0 0 5px rgba(123, 240, 195, 0.3);
+    text-shadow: 0 0 10px rgba(123, 240, 195, 0.5);
 }
 
 .segmented-track {
