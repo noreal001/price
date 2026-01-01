@@ -231,34 +231,74 @@ function renderProducts() {
 // --- CART SYSTEM ---
 let cart = [];
 
+// --- DYNAMIC ICON SYSTEM ---
+const CART_ICONS = [
+    'fa-basket-shopping', 'fa-cart-shopping', 'fa-bag-shopping', 'fa-box',
+    'fa-boxes-stacked', 'fa-gift', 'fa-truck-fast', 'fa-credit-card',
+    'fa-wallet', 'fa-store', 'fa-shop', 'fa-tag', 'fa-tags', 'fa-ticket',
+    'fa-barcode', 'fa-qrcode', 'fa-receipt', 'fa-coins', 'fa-gem', 'fa-crown'
+];
+let currentIconIndex = 0;
+
+function rotateCartIcon() {
+    const iconEl = document.querySelector('#cartDynamicIcon .main-icon');
+    if (!iconEl) return;
+
+    iconEl.style.opacity = '0';
+    iconEl.style.transform = 'scale(0.5) rotate(-20deg)';
+
+    setTimeout(() => {
+        currentIconIndex = (currentIconIndex + 1) % CART_ICONS.length;
+        iconEl.className = `fa-solid ${CART_ICONS[currentIconIndex]} main-icon`;
+        iconEl.style.opacity = '1';
+        iconEl.style.transform = 'scale(1) rotate(0deg)';
+    }, 500);
+}
+
+// Every minute
+setInterval(rotateCartIcon, 60000);
+
 // --- LEVEL SYSTEM ---
+const LEVEL_THRESHOLDS = [
+    7000, 15000, 28000, 45000, 70000, 100000, 140000, 190000, 250000, 350000, 500000, 750000, 1000000
+];
+
 function calculateLevel(total) {
-    const STEP = 10000;
     const MIN = 7000;
+    if (total < MIN) return { current: 0, nextThreshold: MIN, progress: total, totalNeeded: MIN, isMinimum: true };
 
-    // Below 7000: Progress to Minimum Order
-    if (total < MIN) {
-        return { current: 0, nextThreshold: MIN, progress: total, totalNeeded: MIN, isMinimum: true };
+    let lvl = 0;
+    for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
+        if (total >= LEVEL_THRESHOLDS[i]) lvl = i + 1;
+        else break;
     }
 
-    // Between 7000 and 10000: Progress to Level 1
-    if (total < STEP) {
-        return { current: 0, nextThreshold: STEP, progress: total - MIN, totalNeeded: STEP - MIN, isMinimum: false };
-    }
-
-    // Level 1 starts at 10,000. 10k = L1, 20k = L2, etc.
-    let lvl = Math.floor(total / STEP);
-    let currentLvlThreshold = lvl * STEP;
-    let nextLvlThreshold = (lvl + 1) * STEP;
+    let currentLvlThreshold = lvl === 0 ? 0 : LEVEL_THRESHOLDS[lvl - 1];
+    let nextLvlThreshold = LEVEL_THRESHOLDS[lvl] || (currentLvlThreshold + 100000);
+    let totalNeededInLevel = nextLvlThreshold - currentLvlThreshold;
     let progressInLevel = total - currentLvlThreshold;
 
     return {
         current: lvl,
         nextThreshold: nextLvlThreshold,
         progress: progressInLevel,
-        totalNeeded: STEP,
+        totalNeeded: totalNeededInLevel,
         isMinimum: false
     };
+}
+
+function generateSegments(containerId, pct, segmentCount = 15) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = '';
+    const filledCount = Math.floor((pct / 100) * segmentCount);
+
+    for (let i = 0; i < segmentCount; i++) {
+        const seg = document.createElement('div');
+        seg.className = `segment ${i < filledCount ? 'filled' : ''}`;
+        container.appendChild(seg);
+    }
 }
 
 function updateCartUI() {
@@ -266,66 +306,49 @@ function updateCartUI() {
     const bar = document.getElementById('cartBar');
     const sumEl = document.getElementById('cartSum');
     const targetEl = document.getElementById('cartTarget');
-    const fill = document.getElementById('cartProgress');
     const hint = document.getElementById('cartHint');
     const badge = document.getElementById('cartBadge');
+    const pctLabel = document.getElementById('cartLevelPct');
+    const neonMask = document.querySelector('.neon-fill-mask');
 
-    // Sidebar Counter
-    const sbCount = document.getElementById('sidebar-cart-count');
+    // Profile Widget
+    // IDs are handled in the profile update section below
 
     let total = cart.reduce((acc, item) => acc + (item.totalPrice * (item.quantity || 1)), 0);
     let count = cart.length;
 
+    const lvlInfo = calculateLevel(total);
+    let pct = (lvlInfo.progress / lvlInfo.totalNeeded) * 100;
+    if (pct > 100) pct = 100;
+
+    // Update Bottom Bar
     if (bar) {
         if (count > 0) bar.classList.add('visible');
         else bar.classList.remove('visible');
 
-        sumEl.innerText = `${total.toLocaleString()} ₽`;
+        sumEl.innerText = `${total.toLocaleString('ru-RU').replace(/,/g, ' ')} ₽`;
 
-        // Russian pluralization
         let itemsText = 'товаров';
         if (count % 10 === 1 && count % 100 !== 11) itemsText = 'товар';
         else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) itemsText = 'товара';
         badge.innerText = `${count} ${itemsText}`;
 
-        // Level Logic
-        const lvlInfo = calculateLevel(total);
-        let pct = (lvlInfo.progress / lvlInfo.totalNeeded) * 100;
-        if (pct > 100) pct = 100;
-
-        fill.style.width = `${pct}%`;
-        fill.style.background = lvlInfo.isMinimum ? '#999' : 'var(--primary-color)';
-
         if (lvlInfo.isMinimum) {
             let remaining = 7000 - total;
-            let remStr = remaining.toLocaleString('ru-RU').replace(/,/g, '');
+            let remStr = remaining.toLocaleString('ru-RU').replace(/,/g, ' ');
             hint.innerText = `Еще ${remStr} ₽ до минимального заказа`;
-            targetEl.innerText = `7,000 ₽`.replace(/,/g, '');
+            targetEl.innerText = `7 000 ₽`;
         } else {
-            hint.innerText = `Ваш уровень отобразится в профиле`;
-            targetEl.innerText = `${lvlInfo.nextThreshold.toLocaleString()} ₽`;
-
-            // Highlight profile level if it changed (visual feedback)
-            const levelHeader = document.getElementById('userLevelHeader');
-            if (levelHeader) {
-                levelHeader.innerText = `Уровень ${lvlInfo.current}`;
-                if (lvlInfo.current > 0) levelHeader.style.opacity = '1';
-                else levelHeader.style.opacity = '0.5';
-            }
+            let remaining = lvlInfo.nextThreshold - total;
+            let remStr = remaining.toLocaleString('ru-RU').replace(/,/g, ' ');
+            hint.innerText = `Уровень ${lvlInfo.current} • Еще ${remStr} ₽ до Уровня ${lvlInfo.current + 1}`;
+            targetEl.innerText = `${lvlInfo.nextThreshold.toLocaleString('ru-RU').replace(/,/g, ' ')} ₽`;
         }
-        targetEl.style.display = 'block';
 
-        // Dynamic Icon Update (Tesla style SVG)
-        const fillRect = document.getElementById('fillLevelRect');
-        const lvlPct = document.getElementById('cartLevelPct');
-        if (fillRect && lvlPct) {
-            // Fill from y=40 (bottom) to y=0 (top)
-            let newY = 40 - (40 * (pct / 100));
-            let newH = 40 * (pct / 100);
-            fillRect.setAttribute('y', newY);
-            fillRect.setAttribute('height', newH);
-            lvlPct.innerText = `${Math.round(pct)}%`;
-        }
+        if (pctLabel) pctLabel.innerText = `${Math.round(pct)}%`;
+        if (neonMask) neonMask.style.height = `${pct}%`;
+
+        generateSegments('mainBarSegmented', pct, 25);
 
         // Make cart bar clickable
         bar.style.cursor = 'pointer';
@@ -334,6 +357,24 @@ function updateCartUI() {
         };
     }
 
+    // Update Profile Widget
+    const pLvlCurrent = document.getElementById('profileLvlCurrentName');
+    const pLvlNext = document.getElementById('profileLvlNextName');
+    const pLvlProg = document.getElementById('profileLvlProgress');
+
+    if (pLvlCurrent && pLvlNext && pLvlProg) {
+        pLvlCurrent.innerText = `Уровень ${lvlInfo.current}`;
+        pLvlNext.innerText = `Уровень ${lvlInfo.current + 1}`;
+
+        const currentSum = total.toLocaleString('ru-RU').replace(/,/g, ' ');
+        const targetSum = lvlInfo.nextThreshold.toLocaleString('ru-RU').replace(/,/g, ' ');
+        pLvlProg.innerText = `${currentSum} / ${targetSum}`;
+
+        generateSegments('profileLvlBar', pct, 22);
+    }
+
+    // Sidebar Counter
+    const sbCount = document.getElementById('sidebar-cart-count');
     if (sbCount) {
         sbCount.innerText = count;
         sbCount.style.display = count > 0 ? 'inline-block' : 'none';
