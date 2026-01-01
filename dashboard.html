@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный Кабинет</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="base">
+    <!-- Particle Container for Themes -->
+    <div id="particles"></div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-cube brand-icon"></i>
+                <span class="brand-name">Portal</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Главная</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Кошелек</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Статистика</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Настройки</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="nav-item logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Выход</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 id="greeting">Добро пожаловать</h2>
+                <div class="user-profile">
+                    <div class="theme-switcher-dashboard">
+                        <!-- Theme Toggle in Dashboard -->
+                        <button class="theme-btn" onclick="setTheme('base')" title="Minimal"><i
+                                class="fa-solid fa-sun opacity-50"></i></button>
+                        <button class="theme-btn" onclick="setTheme('theme-winter')" title="Winter"><i
+                                class="fa-regular fa-snowflake"></i></button>
+                        <button class="theme-btn" onclick="setTheme('theme-cyberpunk')" title="Cyberpunk"><i
+                                class="fa-solid fa-bolt"></i></button>
+                    </div>
+                    <div class="avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-grid">
+                <!-- Stats Cards -->
+                <div class="card stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
+                    <div class="stat-info">
+                        <h3>Баланс</h3>
+                        <p class="value">₽ 124,500</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-user-group"></i></div>
+                    <div class="stat-info">
+                        <h3>Подписчики</h3>
+                        <p class="value">1,284</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <div class="stat-info">
+                        <h3>Заказы</h3>
+                        <p class="value">45</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card large-card">
+                    <h3>Последняя активность</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="icon bg-green"><i class="fa-solid fa-check"></i></div>
+                            <div class="details">
+                                <h4>Вход выполнен</h4>
+                                <span class="time">Только что</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="icon bg-blue"><i class="fa-solid fa-wallet"></i></div>
+                            <div class="details">
+                                <h4>Пополнение баланса</h4>
+                                <span class="time">2 часа назад</span>
+                            </div>
+                            <span class="amount">+ ₽ 5,000</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="icon bg-purple"><i class="fa-solid fa-bolt"></i></div>
+                            <div class="details">
+                                <h4>Обновление тарифа</h4>
+                                <span class="time">Вчера</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

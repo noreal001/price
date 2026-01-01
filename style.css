@@ -13,6 +13,8 @@
     --input-bg: #fafafa;
     --particle-color: transparent;
     --overlay-bg: transparent;
+    --sidebar-bg: #f8f8f8;
+    --card-radius: 16px;
 }
 
 /* Theme: Winter (Total Black) */
@@ -26,39 +28,21 @@ body.theme-winter {
     --input-bg: #1a1a1a;
     --shadow-soft: 0 4px 20px rgba(255, 255, 255, 0.15);
     --particle-color: rgba(255, 255, 255, 0.9);
+    --sidebar-bg: #0a0a0a;
 }
 
 /* Theme: Cyberpunk (Sleek Minimal) */
-/* "High Tech, Low Life" - but clean */
 body.theme-cyberpunk {
     --bg-color: #030303;
-    /* Almost absolute black */
     --text-color: #eeeeee;
     --primary-color: #00ff9d;
-    /* Sharp Neon Green/Mint */
     --secondary-color: #111;
     --border-color: #00ff9d;
     --card-bg: rgba(5, 5, 5, 0.95);
     --input-bg: #0a0a0a;
     --shadow-soft: 0 0 20px rgba(0, 255, 157, 0.15);
     --particle-color: transparent;
-}
-
-/* Theme: Ocean (Hyper-Realistic Deep) */
-body.theme-ocean {
-    --bg-color: #000000;
-    /* Depth starts at black */
-    --text-color: #ffffff;
-    --primary-color: #00a8cc;
-    /* Sophisticated deep blue/cyan */
-    --secondary-color: #001020;
-    --border-color: rgba(255, 255, 255, 0.1);
-    /* Subtle glass edge */
-    --card-bg: rgba(0, 10, 30, 0.4);
-    /* Ultra transparency (Glass) */
-    --input-bg: rgba(0, 0, 0, 0.3);
-    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.6);
-    --particle-color: rgba(255, 255, 255, 0.3);
+    --sidebar-bg: #050505;
 }
 
 * {
@@ -78,22 +62,22 @@ body {
     transition: background-color 0.5s ease, color 0.5s ease;
     overflow: hidden;
     position: relative;
+    width: 100vw;
 }
 
 /* --- Theme Backgrounds & Special Effects --- */
 
-/* Winter: Pure Black */
+/* Winter */
 body.theme-winter {
     background: #000000;
 }
 
-body.theme-winter .login-card {
+body.theme-winter .card {
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Cyberpunk: Minimal Sleek */
+/* Cyberpunk */
 body.theme-cyberpunk {
-    /* Subtle vertical scanline texture, barely visible */
     background:
         repeating-linear-gradient(0deg,
             transparent,
@@ -103,12 +87,10 @@ body.theme-cyberpunk {
         #050505;
 }
 
-/* Static clean border, no glitch animation on card */
-body.theme-cyberpunk .login-card {
+body.theme-cyberpunk .card {
     border: 1px solid var(--border-color);
     box-shadow: 0 0 15px rgba(0, 255, 157, 0.1);
-    border-radius: 2px;
-    /* Sharper edges */
+    border-radius: 4px;
 }
 
 body.theme-cyberpunk .btn-primary {
@@ -130,74 +112,15 @@ body.theme-cyberpunk .input-icon {
     color: var(--primary-color);
 }
 
-/* Ocean: Hyper-Realistic Deep Sea */
-body.theme-ocean {
-    /* Smooth gradient into the abyss */
-    background: linear-gradient(to bottom, #001e3c 0%, #000810 60%, #000000 100%);
-}
-
-body.theme-ocean::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Very subtle organic noise for water texture */
-    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.002' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.07'/%3E%3C/svg%3E");
-    mix-blend-mode: soft-light;
-    z-index: 0;
-    pointer-events: none;
-    animation: deep-sway 20s ease-in-out infinite alternate;
-}
-
-@keyframes deep-sway {
-    from {
-        transform: scale(1.05);
-    }
-
-    to {
-        transform: scale(1.15);
-    }
-}
-
-/* Premium Glassmorphism Card for Ocean */
-body.theme-ocean .login-card {
-    background: rgba(0, 15, 30, 0.3);
-    /* Low opacity */
-    backdrop-filter: blur(25px);
-    /* Heavy blur */
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    /* Subtle white border */
-    border-top: 1px solid rgba(255, 255, 255, 0.25);
-    /* Highlight top */
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-    border-radius: 20px;
-    /* Softer rounding */
-}
-
-body.theme-ocean .btn-primary {
-    background: linear-gradient(135deg, #00a8cc, #005a8d);
-    border: none;
-    box-shadow: 0 4px 15px rgba(0, 168, 204, 0.3);
-}
-
-body.theme-ocean input[type="tel"] {
-    background: rgba(255, 255, 255, 0.05);
-    /* Glass inputs */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-body.theme-ocean input[type="tel"]:focus {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 4px rgba(0, 168, 204, 0.15);
+body.theme-cyberpunk .nav-item.active {
+    box-shadow: inset 2px 0 0 var(--primary-color);
+    background: rgba(0, 255, 157, 0.05);
+    color: var(--primary-color);
+    border-right: none;
 }
 
 
-/* Standard Layout */
+/* ================= LOGIN STYLES ================= */
 .login-container {
     width: 100%;
     height: 100%;
@@ -214,19 +137,17 @@ body.theme-ocean input[type="tel"]:focus {
     max-width: 420px;
     padding: 40px;
     background: var(--card-bg);
-    /* Use variable for compatibility */
     text-align: center;
     z-index: 10;
-    /* Default (Minimal) shadow/border */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     border: 1px solid #e5e5e5;
+    border-radius: var(--card-radius);
 }
 
-/* Reset border for custom themes that don't need the grey one */
+/* Reset login-card border for custom themes */
 body.theme-winter .login-card,
-body.theme-cyberpunk .login-card,
-body.theme-ocean .login-card {
-    /* Handled in theme blocks */
+body.theme-cyberpunk .login-card {
+    border-radius: var(--card-radius);
 }
 
 .brand-logo {
@@ -249,12 +170,11 @@ body.theme-ocean .login-card {
 }
 
 body.theme-winter .subtitle,
-body.theme-ocean .subtitle,
 body.theme-cyberpunk .subtitle {
     color: rgba(255, 255, 255, 0.85);
 }
 
-/* Form Styles */
+/* Form Elements */
 .input-group {
     text-align: left;
     margin-bottom: 24px;
@@ -266,11 +186,9 @@ body.theme-cyberpunk .subtitle {
     font-weight: 600;
     margin-bottom: 8px;
     color: #333;
-    /* Default */
 }
 
 body.theme-winter .input-group label,
-body.theme-ocean .input-group label,
 body.theme-cyberpunk .input-group label {
     color: rgba(255, 255, 255, 0.9);
 }
@@ -304,11 +222,9 @@ input[type="tel"] {
 
 input[type="tel"]:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
-    /* Default halo */
 }
 
-/* Ensure minimal focus ring is visible */
+/* Specific overrides */
 body:not([class*="theme-"]) input[type="tel"]:focus {
     box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
 }
@@ -323,7 +239,6 @@ input[type="tel"]:focus+.input-icon,
     color: var(--primary-color);
 }
 
-/* Specific overrides for icon colors */
 body:not([class*="theme-"]) .input-wrapper:focus-within .input-icon {
     color: black;
 }
@@ -331,8 +246,6 @@ body:not([class*="theme-"]) .input-wrapper:focus-within .input-icon {
 body.theme-winter .input-wrapper:focus-within .input-icon {
     color: white;
 }
-
-
 
 .btn-primary {
     width: 100%;
@@ -364,12 +277,10 @@ body.theme-winter .btn-primary {
 }
 
 body.theme-winter .btn-primary:disabled,
-body.theme-ocean .btn-primary:disabled,
 body.theme-cyberpunk .btn-primary:disabled {
     background: #333;
     color: #666;
     border: 1px solid #444;
-    /* Add border for visibility when disabled in dark mode */
 }
 
 .btn-primary:not(:disabled):hover {
@@ -377,7 +288,6 @@ body.theme-cyberpunk .btn-primary:disabled {
     box-shadow: 0 8px 16px var(--shadow-soft);
 }
 
-/* Divider */
 .divider {
     position: relative;
     margin: 32px 0;
@@ -396,7 +306,6 @@ body.theme-cyberpunk .btn-primary:disabled {
 }
 
 body.theme-winter .divider::before,
-body.theme-ocean .divider::before,
 body.theme-cyberpunk .divider::before {
     background: rgba(255, 255, 255, 0.1);
 }
@@ -405,13 +314,11 @@ body.theme-cyberpunk .divider::before {
     position: relative;
     z-index: 1;
     background: var(--card-bg);
-    /* Match card bg */
     padding: 0 16px;
     color: #999;
     font-size: 0.85rem;
 }
 
-/* Social Login */
 .social-login {
     display: flex;
     gap: 16px;
@@ -435,7 +342,6 @@ body.theme-cyberpunk .divider::before {
 }
 
 body.theme-winter .social-btn,
-body.theme-ocean .social-btn,
 body.theme-cyberpunk .social-btn {
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.15);
@@ -449,15 +355,10 @@ body.theme-cyberpunk .social-btn {
 }
 
 body.theme-winter .social-btn:hover,
-body.theme-ocean .social-btn:hover,
 body.theme-cyberpunk .social-btn:hover {
     border-color: var(--primary-color);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 10px var(--primary-color);
-}
-
-body.theme-ocean .social-btn:hover {
-    box-shadow: 0 0 15px rgba(0, 168, 204, 0.4);
 }
 
 .footer-text {
@@ -466,7 +367,6 @@ body.theme-ocean .social-btn:hover {
 }
 
 body.theme-winter .footer-text,
-body.theme-ocean .footer-text,
 body.theme-cyberpunk .footer-text {
     color: rgba(255, 255, 255, 0.7);
 }
@@ -486,7 +386,267 @@ body.theme-winter .footer-text a {
     text-decoration: underline;
 }
 
-/* Animations */
+/* ================= DASHBOARD STYLES ================= */
+.dashboard-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    background: transparent;
+    z-index: 10;
+}
+
+.sidebar {
+    width: 260px;
+    height: 100%;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.5s;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 40px;
+}
+
+.brand-icon {
+    color: var(--primary-color);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #666;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+    font-weight: 500;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    width: 100%;
+    cursor: pointer;
+}
+
+body.theme-winter .nav-item,
+body.theme-cyberpunk .nav-item {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-color);
+}
+
+body.theme-winter .nav-item:hover,
+body.theme-cyberpunk .nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.logout {
+    color: var(--error-color) !important;
+}
+
+.logout:hover {
+    background: rgba(255, 59, 48, 0.1) !important;
+}
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.top-bar h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    color: var(--bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.theme-winter .avatar {
+    color: black;
+    background: white;
+}
+
+.theme-switcher-dashboard {
+    display: flex;
+    gap: 8px;
+}
+
+.theme-switcher-dashboard .theme-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+.theme-switcher-dashboard .theme-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+
+.large-card {
+    grid-column: span 3;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+
+body.theme-winter .stat-icon,
+body.theme-cyberpunk .stat-icon {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.stat-info h3 {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+body.theme-winter .stat-info h3,
+body.theme-cyberpunk .stat-info h3 {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-info .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.activity-list {
+    margin-top: 20px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item .icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.bg-green {
+    background: var(--success-color);
+}
+
+.bg-blue {
+    background: #007aff;
+}
+
+.bg-purple {
+    background: #bf00ff;
+}
+
+.activity-item .details h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.activity-item .details .time {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+body.theme-winter .activity-item .details .time,
+body.theme-cyberpunk .activity-item .details .time {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.activity-item .amount {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+/* Animation Utils */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -499,7 +659,6 @@ body.theme-winter .footer-text a {
     }
 }
 
-/* Particle Container */
 #particles {
     position: fixed;
     top: 0;
@@ -513,37 +672,24 @@ body.theme-winter .footer-text a {
 .snowflake,
 .bubble {
     position: absolute;
-    color: var(--particle-color);
+    color: variable;
     pointer-events: none;
 }
 
 .snowflake {
     top: -10px;
     animation: fall linear forwards;
+    color: var(--particle-color);
 }
 
-.bubble {
-    bottom: -20px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: rise linear forwards;
-}
-
+/* Bubbles css removed as requested */
 @keyframes fall {
     to {
         transform: translateY(110vh) rotate(360deg);
     }
 }
 
-@keyframes rise {
-    to {
-        transform: translateY(-110vh);
-        opacity: 0;
-    }
-}
-
-/* Theme Switcher */
+/* Theme Switcher (Absolute Login Page) */
 .theme-switcher {
     position: absolute;
     top: 20px;
@@ -589,10 +735,6 @@ body.theme-winter .theme-btn.active {
     color: black;
 }
 
-body.theme-ocean .theme-btn.active {
-    color: white;
-}
-
 body.theme-cyberpunk .theme-btn.active {
     color: black;
     background: #00ff9d;
@@ -607,9 +749,4 @@ body.theme-winter .theme-switcher {
 body.theme-cyberpunk .theme-switcher {
     background: rgba(0, 0, 0, 0.5);
     border-color: #00ff9d;
-}
-
-body.theme-ocean .theme-switcher {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(0, 168, 204, 0.3);
 }

@@ -1,157 +1,177 @@
+/* script.js */
+
+// --- 1. Theme Management ---
+function setTheme(themeName) {
+    localStorage.setItem('theme', themeName);
+    document.body.className = themeName; // Replaces current class
+    startParticles(themeName);
+    updateThemeButtons(themeName);
+}
+
+function updateThemeButtons(themeName) {
+    const buttons = document.querySelectorAll('.theme-btn');
+    buttons.forEach(btn => {
+        // Simple logic for UI active state in switcher
+        if (btn.onclick && btn.onclick.toString().includes(themeName)) {
+            btn.classList.add('active');
+        } else if (btn.dataset && btn.dataset.theme === themeName.replace('theme-', '')) {
+            btn.classList.add('active'); // For index.html buttons
+        } else if (themeName === 'base' && (btn.dataset.theme === 'minimal' || (btn.onclick && btn.onclick.toString().includes('base')))) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'base';
+    // Safety check if user had ocean selected
+    if (savedTheme === 'theme-ocean') {
+        setTheme('base');
+    } else {
+        setTheme(savedTheme);
+    }
+}
+
+// --- 2. Particles (Winter) ---
+let particleInterval;
+
+function startParticles(theme) {
+    const container = document.getElementById('particles');
+    if (!container) return;
+
+    container.innerHTML = '';
+    clearInterval(particleInterval);
+
+    if (theme === 'theme-winter') {
+        particleInterval = setInterval(() => createSnowflake(container), 200);
+    }
+}
+
+function createSnowflake(container) {
+    const flake = document.createElement('div');
+    flake.classList.add('snowflake');
+    flake.style.left = Math.random() * 100 + 'vw';
+    flake.style.opacity = Math.random();
+    flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+    flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    const icon = document.createElement('i');
+    icon.classList.add('fa-regular', 'fa-snowflake');
+    flake.appendChild(icon);
+
+    container.appendChild(flake);
+    setTimeout(() => flake.remove(), 5000);
+}
+
+
+// --- 3. Login Logic (Mock Auth) ---
+
+// Check session on page load
+function checkSession() {
+    const protectedRoutes = ['dashboard.html'];
+
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+    // If on dashboard but not logged in -> Go to Login
+    if (protectedRoutes.includes(currentPage) && !isLoggedIn) {
+        window.location.href = 'index.html';
+    }
+
+    // If on login but already logged in -> Go to Dashboard
+    if ((currentPage === 'index.html' || currentPage === '') && isLoggedIn) {
+        window.location.href = 'dashboard.html';
+    }
+}
+
+function loginUser(method) {
+    console.log(`Logging in via ${method}...`);
+
+    if (method === 'phone') {
+        const btn = document.querySelector('.btn-primary');
+        if (btn) {
+            btn.innerText = 'Вход...';
+            btn.disabled = true;
+        }
+    }
+
+    setTimeout(() => {
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('loginMethod', method);
+        window.location.href = 'dashboard.html';
+    }, 1000);
+}
+
+function logout() {
+    localStorage.removeItem('isLoggedIn');
+    window.location.href = 'index.html';
+}
+
+
+// --- 4. Initialization ---
+
 document.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+    checkSession();
+
+    // Phone Input Logic (Only on Index)
     const phoneInput = document.getElementById('phone');
     const submitBtn = document.getElementById('submitBtn');
-    const loginForm = document.getElementById('loginForm');
 
-    // Theme Switcher Logic
-    const themeBtns = document.querySelectorAll('.theme-btn');
-    const body = document.body;
-    const particlesContainer = document.getElementById('particles');
-    let particleInterval;
-
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme') || 'minimal';
-    setTheme(savedTheme);
-
-    themeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const theme = btn.dataset.theme;
-            setTheme(theme);
-        });
-    });
-
-    function setTheme(theme) {
-        // Update body class
-        body.className = ''; // Clear all themes
-        if (theme !== 'minimal') {
-            body.classList.add(`theme-${theme}`);
-        }
-
-        // Update buttons
-        themeBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.theme === theme);
-        });
-
-        // Save preferences
-        localStorage.setItem('theme', theme);
-
-        // Handle Particles
-        clearInterval(particleInterval);
-        particlesContainer.innerHTML = ''; // Clear existing
-
-        if (theme === 'winter') {
-            startParticles('snowflake', 200);
-        } else if (theme === 'ocean') {
-            startParticles('bubble', 400);
-        } else if (theme === 'cyberpunk') {
-            // Maybe some glitch effect later? 
-            // For now, clean or specific CSS background handles it
-        }
-    }
-
-    function startParticles(type, delay) {
-        const createParticle = () => {
-            const el = document.createElement('div');
-            el.classList.add(type);
-            el.style.left = Math.random() * 100 + 'vw';
-            el.style.opacity = Math.random();
-            el.style.fontSize = (Math.random() * 10 + 10) + 'px';
-
-            if (type === 'bubble') {
-                el.style.width = (Math.random() * 20 + 10) + 'px';
-                el.style.height = el.style.width;
+    if (phoneInput && submitBtn) {
+        phoneInput.addEventListener('input', (e) => {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[2]) {
+                e.target.value = x[1] ? '+7 ' : '';
             } else {
-                el.innerHTML = '❄';
+                e.target.value = !x[3] ? `+7 (${x[2]}` : `+7 (${x[2]}) ${x[3]}` + (x[4] ? `-${x[4]}` : '') + (x[5] ? `-${x[5]}` : '');
             }
 
-            const duration = Math.random() * 5 + 5;
-            el.style.animationDuration = duration + 's';
-
-            particlesContainer.appendChild(el);
-
-            // Cleanup
-            setTimeout(() => {
-                el.remove();
-            }, duration * 1000);
-        };
-
-        particleInterval = setInterval(createParticle, delay);
-        createParticle(); // Immediate start
-    }
-
-    // Phone Masking Logic (Existing)
-    const maskOptions = {
-        mask: '+7 (000) 000-00-00',
-        lazy: false
-    };
-
-    phoneInput.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        let formattedValue = '';
-
-        if (!value) {
-            phoneInput.value = '';
-            validateForm();
-            return;
-        }
-
-        if (['7', '8'].includes(value[0])) {
-            value = value.substring(1);
-        }
-
-        value = value.substring(0, 10);
-
-        if (value.length > 0) formattedValue += '+7 (' + value.substring(0, 3);
-        if (value.length >= 3) formattedValue += ') ' + value.substring(3, 6);
-        if (value.length >= 6) formattedValue += '-' + value.substring(6, 8);
-        if (value.length >= 8) formattedValue += '-' + value.substring(8, 10);
-
-        e.target.value = formattedValue;
-        validateForm();
-    });
-
-    phoneInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && phoneInput.value.length <= 4) {
-            e.preventDefault();
-            phoneInput.value = '';
-            validateForm();
-        }
-    });
-
-    function validateForm() {
-        const value = phoneInput.value.replace(/\D/g, '');
-        const isValid = value.length === 11;
-
-        submitBtn.disabled = !isValid;
-        if (isValid) {
-            submitBtn.classList.add('pulse');
-        } else {
-            submitBtn.classList.remove('pulse');
-        }
-    }
-
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const btnContent = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Вход...';
-
-        setTimeout(() => {
-            submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Успешно!';
-            submitBtn.style.background = 'var(--success-color)';
-            setTimeout(() => {
-                alert('Успешный вход! Переход в личный кабинет...');
-                submitBtn.innerHTML = btnContent;
-                submitBtn.style.background = '';
+            if (e.target.value.length >= 18) {
                 submitBtn.disabled = false;
-            }, 500);
-        }, 1500);
-    });
-
-    // Social Login Interaction
-    document.querySelectorAll('.social-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            alert(`Вход через ${btn.title} в разработке`);
+            } else {
+                submitBtn.disabled = true;
+            }
         });
-    });
+
+        submitBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent form submit
+            loginUser('phone');
+        });
+    }
+
+    // Social Login Buttons (Only on Index)
+    const socialBtns = document.querySelectorAll('.social-btn');
+    if (socialBtns) {
+        socialBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                let method = 'social';
+                if (this.innerHTML.includes('google')) method = 'google';
+                if (this.innerHTML.includes('apple')) method = 'apple';
+                if (this.innerHTML.includes('telegram')) method = 'telegram';
+
+                loginUser(method);
+            });
+        });
+    }
+
+    // Theme Switcher Buttons (Index)
+    const themeBtns = document.querySelectorAll('.theme-switcher .theme-btn');
+    if (themeBtns) {
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const theme = this.dataset.theme;
+                if (theme === 'minimal') setTheme('base');
+                else if (theme === 'winter') setTheme('theme-winter');
+                else if (theme === 'cyberpunk') setTheme('theme-cyberpunk');
+            });
+        });
+    }
+
+    // Logout Button (Only on Dashboard)
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
 });
