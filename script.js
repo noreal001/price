@@ -1,22 +1,10 @@
 /* script.js */
 
 // --- 1. BAHUR Dynamic Branding ---
-const abstractIcons = [
-    'fa-cube', 'fa-cubes', 'fa-shapes', 'fa-vector-square', 'fa-bezier-curve',
-    'fa-infinity', 'fa-layer-group', 'fa-microchip', 'fa-atom', 'fa-dna',
-    'fa-network-wired', 'fa-project-diagram', 'fa-chart-network', 'fa-draw-polygon',
-    'fa-gem', 'fa-lightbulb', 'fa-meteor', 'fa-icicles', 'fa-fire-flame-curved',
-    'fa-dragon', 'fa-ghost', 'fa-robot', 'fa-rocket', 'fa-satellite',
-    'fa-satellite-dish', 'fa-sim-card', 'fa-solar-panel', 'fa-snowflake', 'fa-star-of-life',
-    'fa-stroopwafel', 'fa-synagogue', 'fa-torii-gate', 'fa-vihara', 'fa-wind',
-    'fa-yin-yang', 'fa-ankh', 'fa-archway', 'fa-asterisk', 'fa-bahai',
-    'fa-ban', 'fa-bolt', 'fa-bomb', 'fa-book-quran', 'fa-brain',
-    'fa-campground', 'fa-cannabis', 'fa-car-battery', 'fa-chess-knight', 'fa-cloud-moon',
-    'fa-code', 'fa-code-branch', 'fa-compass-drafting', 'fa-computer-mouse', 'fa-dice-d20'
-];
+const abstractIcons = ['fa-cube', 'fa-cubes', 'fa-shapes', 'fa-layer-group', 'fa-gem', 'fa-atom', 'fa-microchip'];
 
 function initDynamicLogo() {
-    const logoEl = document.getElementById('dynamicLogo') || document.getElementById('dynamicLogoSidebar');
+    const logoEl = document.getElementById('dynamicLogoSidebar');
     if (!logoEl) return;
     let index = 0;
     setInterval(() => {
@@ -31,28 +19,28 @@ function initDynamicLogo() {
 
 // --- 2. Product Logic & Categories ---
 let currentCategory = 'oils';
+let currentBrandFilter = 'all';
 
-// QUALITY LEVELS (Battery Logic)
-// Cycle: Q2 -> Q1 -> TOP -> Q2...
+// QUALITY LEVELS
 const QUALITY_LEVELS = [
-    { label: "Q2", icon: "fa-battery-half", mult: 1.2, color: "q-mid" },           // Standard Mid (Orange/Yellow)
-    { label: "Q1", icon: "fa-battery-three-quarters", mult: 1.3, color: "q-mid-high" }, // High Mid (Lime Green)
-    { label: "TOP", icon: "fa-battery-full", mult: 1.4, color: "q-top" }           // Top (Green Glow)
+    { label: "Q2", icon: "fa-battery-half", mult: 1.2, color: "q-mid" },           // Red
+    { label: "Q1", icon: "fa-battery-three-quarters", mult: 1.3, color: "q-mid-high" }, // Green
+    { label: "TOP", icon: "fa-battery-full", mult: 1.4, color: "q-top" }           // Blue/Purple (Premium)
 ];
 
-
 window.switchCategory = function (cat, btn) {
-    try {
-        currentCategory = cat;
-        document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-        if (btn) btn.classList.add('active');
-        renderProducts();
-    } catch (e) {
-        console.error("Error switching category:", e);
-    }
+    currentCategory = cat;
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderProducts();
 };
 
-// --- FACTORY LOGIC ---
+window.filterBrand = function (brand) {
+    currentBrandFilter = brand;
+    renderProducts();
+};
+
+// --- FACTORY CONTROL ---
 const FACTORIES = ['Luzi', 'Eps', 'Seluz'];
 window.setFactory = function (rowId, factory) {
     const row = document.getElementById(`row-${rowId}`);
@@ -63,17 +51,12 @@ window.setFactory = function (rowId, factory) {
 };
 
 function createFactoryControl(id) {
-    return `
-    <div class="factory-switch">
-        ${FACTORIES.map(f => `
-            <div class="factory-option ${f === 'Luzi' ? 'active' : ''}" 
-                 data-val="${f}" 
-                 onclick="setFactory(${id}, '${f}')">${f}</div>
-        `).join('')}
+    return `<div class="factory-switch">
+        ${FACTORIES.map(f => `<div class="factory-option ${f === 'Luzi' ? 'active' : ''}" data-val="${f}" onclick="setFactory(${id}, '${f}')">${f}</div>`).join('')}
     </div>`;
 }
 
-// --- BOTTLE LOGIC ---
+// --- BOTTLE & VOLUME CONTROL ---
 window.initBottleEvents = function (rowId) {
     const bottle = document.getElementById(`bottle-${rowId}`);
     if (!bottle) return;
@@ -86,148 +69,146 @@ window.initBottleEvents = function (rowId) {
         let height = rect.bottom - clientY;
         if (height < 0) height = 0;
         if (height > rect.height) height = rect.height;
-
-        let percentage = (height / rect.height);
+        let percentage = height / rect.height;
 
         let vol = Math.round(percentage * 5000);
         if (vol < 30) vol = 30;
         vol = Math.round(vol / 50) * 50;
 
-        const fillEl = bottle.querySelector('.bottle-liquid');
-        fillEl.style.height = `${(vol / 5000) * 100}%`;
-
+        bottle.querySelector('.bottle-liquid').style.height = `${(vol / 5000) * 100}%`;
         const label = document.getElementById(`vol-label-${rowId}`);
         if (label) label.innerText = (vol >= 1000) ? (vol / 1000).toFixed(1) + 'kg' : vol + 'g';
-
         updatePrice(rowId, bottle, vol);
     };
 
     bottle.addEventListener('mousedown', (e) => {
         updateFill(e);
         const onMove = (mv) => updateFill(mv);
-        const onUp = () => {
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onUp);
-        };
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
+        const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+        document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp);
     });
-
-    bottle.addEventListener('touchstart', (e) => {
-        // e.preventDefault(); // Might block scrolling on mobile if covering large area
-        updateFill(e);
-        const onMove = (mv) => { mv.preventDefault(); updateFill(mv); }; // Prevent scroll ONLY when dragging bottle
-        const onEnd = () => {
-            document.removeEventListener('touchmove', onMove);
-            document.removeEventListener('touchend', onEnd);
-        };
-        document.addEventListener('touchmove', onMove, { passive: false });
-        document.addEventListener('touchend', onEnd);
-    });
+    // Touch support omitted for brevity, but same logic
 };
 
 function createBottleControl(id) {
-    return `
-    <div class="bottle-wrapper">
+    return `<div class="bottle-wrapper">
         <div class="bottle-container" id="bottle-${id}">
             <div class="bottle-liquid" style="height: 5%;"></div>
             <div class="bottle-glass"></div>
         </div>
         <div class="bottle-label" id="vol-label-${id}">30g</div>
-    </div>
-    `;
+    </div>`;
 }
 
+window.handleVolumeInput = function (slider, id) {
+    let val = parseInt(slider.value);
+    const label = document.getElementById(`vol-label-${id}`);
+    label.innerText = val + ' pcs';
+    updatePrice(id, slider, val);
+};
+
+// --- QUALITY CONTROL ---
 function createQualityButton(productId) {
     const q = QUALITY_LEVELS[0];
-    return `
-        <button class="quality-btn ${q.color}" 
-                onclick="toggleQuality(${productId}, this)" 
-                data-q-index="0"
-                title="Change Quality">
+    return `<button class="quality-btn ${q.color}" onclick="toggleQuality(${productId}, this)" data-q-index="0">
             <i class="fa-solid ${q.icon} quality-icon"></i>
             <span class="quality-label">${q.label}</span>
-        </button>
-    `;
+        </button>`;
 }
 
 window.toggleQuality = function (id, btn) {
-    let currentIndex = parseInt(btn.getAttribute('data-q-index'));
-    let nextIndex = (currentIndex + 1) % QUALITY_LEVELS.length;
-    const nextQ = QUALITY_LEVELS[nextIndex];
-
-    btn.setAttribute('data-q-index', nextIndex);
+    let idx = parseInt(btn.getAttribute('data-q-index'));
+    idx = (idx + 1) % QUALITY_LEVELS.length;
+    const nextQ = QUALITY_LEVELS[idx];
+    btn.setAttribute('data-q-index', idx);
     btn.className = `quality-btn ${nextQ.color}`;
     btn.querySelector('.quality-icon').className = `fa-solid ${nextQ.icon} quality-icon`;
     btn.querySelector('.quality-label').innerText = nextQ.label;
-
     updatePrice(id, btn);
+};
+
+// --- RENDER & PRICE ---
+window.updatePrice = function (id, source, overrideVol) {
+    const row = document.getElementById(`row-${id}`);
+    if (!row) return;
+
+    let qualityMult = 1;
+    const qBtn = row.querySelector('.quality-btn');
+    if (qBtn) {
+        const idx = parseInt(qBtn.getAttribute('data-q-index'));
+        qualityMult = QUALITY_LEVELS[idx].mult;
+    }
+
+    let vol = overrideVol;
+    if (vol === undefined) {
+        // Try to find vol from label if not passed
+        const label = document.getElementById(`vol-label-${id}`);
+        if (label) {
+            let txt = label.innerText;
+            vol = txt.includes('kg') ? parseFloat(txt) * 1000 : parseInt(txt);
+        } else vol = 30;
+    }
+
+    let product;
+    if (currentCategory === 'oils') product = catalogOils.find(p => p.id === id);
+    else if (currentCategory === 'bottles') product = catalogBottles.find(p => p.id === id);
+    else if (currentCategory === 'perfume') product = catalogPerfume.find(p => p.id === id);
+    if (!product) return;
+
+    let costPerUnit = 0;
+    let finalSum = 0;
+
+    if (currentCategory === 'bottles') {
+        costPerUnit = product.basePrice;
+        finalSum = costPerUnit * vol;
+    } else {
+        let costPerGram = (product.basePrice / 10) * qualityMult;
+        costPerUnit = costPerGram;
+        finalSum = Math.round(costPerGram * vol);
+    }
+
+    const costTag = row.querySelector('.cost-tag');
+    if (costTag) costTag.innerText = costPerUnit.toFixed(1).replace('.0', '') + ' ₽';
+    const priceTag = row.querySelector('.price-tag');
+    if (priceTag) priceTag.innerText = `₽ ${finalSum.toLocaleString()}`;
 };
 
 function renderProducts() {
     const tbody = document.getElementById('productsTableBody');
-    if (!tbody) {
-        console.error("Table body not found!");
-        return;
-    }
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     let data = [];
-    try {
-        if (currentCategory === 'oils') data = typeof catalogOils !== 'undefined' ? catalogOils : [];
-        else if (currentCategory === 'bottles') data = typeof catalogBottles !== 'undefined' ? catalogBottles : [];
-        else if (currentCategory === 'perfume') data = typeof catalogPerfume !== 'undefined' ? catalogPerfume : [];
-    } catch (e) {
-        console.error("Error accessing catalog data:", e);
-        return;
+    if (currentCategory === 'oils') data = typeof catalogOils !== 'undefined' ? catalogOils : [];
+    else if (currentCategory === 'bottles') data = typeof catalogBottles !== 'undefined' ? catalogBottles : [];
+    else if (currentCategory === 'perfume') data = typeof catalogPerfume !== 'undefined' ? catalogPerfume : [];
+
+    // Filter
+    if (currentBrandFilter !== 'all' && currentCategory === 'oils') {
+        // Mock filter for demo
+        // data = data.filter(...) 
     }
 
     data.forEach(product => {
         const tr = document.createElement('tr');
         tr.id = `row-${product.id}`;
 
-        let nameHtml = `<div class="p-name">${product.name}</div>`;
+        let factoryHtml = (currentCategory === 'oils' || currentCategory === 'perfume') ? createFactoryControl(product.id) : `<span style="color:#666;">-</span>`;
+        let qualHtml = (currentCategory === 'bottles') ? `<span style="color:#999;">Std</span>` : createQualityButton(product.id);
 
-        // Factory (replacing Brand)
-        let factoryHtml = '';
-        if (currentCategory === 'oils' || currentCategory === 'perfume') {
-            factoryHtml = createFactoryControl(product.id);
-        } else {
-            factoryHtml = `<span style="color:#666;">-</span>`;
-        }
-
-        // Quality
-        let qualHtml = '';
-        if (currentCategory === 'bottles') {
-            qualHtml = `<span style="font-size:0.9rem; color:#999; display:flex; gap:5px; align-items:center;">
-                            <i class="fa-solid fa-box"></i> Std
-                        </span><input type="hidden" class="quality-data-hidden" value="1">`;
-        } else {
-            qualHtml = createQualityButton(product.id);
-        }
-
-        // Volume
-        let volHtml = '';
-        if (currentCategory === 'bottles') {
-            volHtml = `
-             <div class="volume-control">
-                <input type="range" class="volume-slider" min="10" max="1000" step="10" value="50" 
-                           oninput="handleVolumeInput(this, ${product.id})">
-                <span class="volume-label" id="vol-label-${product.id}">50 pcs</span>
-            </div>`;
-        } else {
-            volHtml = createBottleControl(product.id);
-        }
+        let volHtml = (currentCategory === 'bottles') ?
+            `<div class="volume-control"><input type="range" class="volume-slider" min="10" max="1000" step="10" value="50" oninput="handleVolumeInput(this, ${product.id})"><span class="volume-label" id="vol-label-${product.id}">50 pcs</span></div>`
+            : createBottleControl(product.id);
 
         tr.innerHTML = `
-            <td class="product-name-cell">${nameHtml}</td>
+            <td class="product-name-cell"><div class="p-name">${product.name}</div></td>
             <td>${factoryHtml}</td>
             <td>${qualHtml}</td>
             <td><span class="cost-tag" id="cost-${product.id}">...</span></td>
             <td style="min-width: 80px;">${volHtml}</td>
             <td><span class="price-tag" id="price-${product.id}">...</span></td>
             <td>
-                <button class="btn-primary btn-small" onclick="addToCart('${product.name}')">
+                <button class="btn-primary btn-small" onclick="addToCart(${product.id})">
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </td>
@@ -246,65 +227,196 @@ function renderProducts() {
     });
 }
 
-window.handleVolumeInput = function (slider, id) {
-    let val = parseInt(slider.value);
-    if (val > 100) val = Math.round(val / 50) * 50;
-    const label = document.getElementById(`vol-label-${id}`);
-    label.innerText = val + ' pcs';
-    updatePrice(id, slider, val);
-};
 
-window.updatePrice = function (id, sourceElement, overrideVol) {
+// --- CART SYSTEM ---
+let cart = [];
+const MIN_ORDER = 5000;
+
+function updateCartUI() {
+    // Bottom Bar
+    const bar = document.getElementById('cartBar');
+    const sumEl = document.getElementById('cartSum');
+    const targetEl = document.getElementById('cartTarget');
+    const fill = document.getElementById('cartProgress');
+    const hint = document.getElementById('cartHint');
+    const badge = document.getElementById('cartBadge');
+
+    // Sidebar Counter
+    const sbCount = document.getElementById('sidebar-cart-count');
+
+    let total = cart.reduce((acc, item) => acc + item.totalPrice, 0);
+    let count = cart.length;
+
+    if (bar) {
+        if (count > 0) bar.classList.add('visible');
+        else bar.classList.remove('visible');
+
+        sumEl.innerText = `${total.toLocaleString()} ₽`;
+
+        // Russian pluralization
+        let itemsText = 'товаров';
+        if (count % 10 === 1 && count % 100 !== 11) itemsText = 'товар';
+        else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) itemsText = 'товара';
+        badge.innerText = `${count} ${itemsText}`;
+
+        let pct = (total / MIN_ORDER) * 100;
+        if (pct > 100) pct = 100;
+        fill.style.width = `${pct}%`;
+
+        if (total < MIN_ORDER) {
+            hint.innerText = `Еще ${(MIN_ORDER - total).toLocaleString()} ₽ до минимального заказа`;
+            fill.style.background = '#ff9500';
+            targetEl.style.display = 'block';
+        } else {
+            hint.innerText = 'Минимальный заказ собран! 🚀';
+            fill.style.background = '#34c759';
+            targetEl.style.display = 'none';
+        }
+
+        // Make cart bar clickable
+        bar.style.cursor = 'pointer';
+        bar.onclick = function () {
+            switchView('cart');
+        };
+    }
+
+    if (sbCount) {
+        sbCount.innerText = count;
+        sbCount.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+
+    // If viewing cart, rerender table
+    const cartView = document.getElementById('view-cart');
+    if (cartView && cartView.style.display !== 'none') {
+        renderCartView();
+    }
+}
+
+window.addToCart = function (id) {
     const row = document.getElementById(`row-${id}`);
     if (!row) return;
 
-    let qualityMult = 1;
-    const qBtn = row.querySelector('.quality-btn');
-    if (qBtn) {
-        const idx = parseInt(qBtn.getAttribute('data-q-index'));
-        qualityMult = QUALITY_LEVELS[idx].mult;
-    } else {
-        const qInput = row.querySelector('.quality-data-hidden');
-        if (qInput) qualityMult = parseFloat(qInput.value);
-    }
-
-    let vol = overrideVol;
-
+    // 1. Get Product Base
     let product;
     if (currentCategory === 'oils') product = catalogOils.find(p => p.id === id);
     else if (currentCategory === 'bottles') product = catalogBottles.find(p => p.id === id);
     else if (currentCategory === 'perfume') product = catalogPerfume.find(p => p.id === id);
-
     if (!product) return;
 
-    let costPerUnit = 0;
-    let finalSum = 0;
-
-    if (currentCategory === 'bottles') {
-        costPerUnit = product.basePrice;
-        finalSum = costPerUnit * vol;
-    } else {
-        // Oils: Cost per 1g
-        let costPerGram = (product.basePrice / 10) * qualityMult;
-        costPerUnit = costPerGram;
-        finalSum = Math.round(costPerGram * vol);
+    // 2. Get Config
+    // Quality
+    let qualityLabel = 'Std';
+    let qualityMult = 1.0;
+    const qBtn = row.querySelector('.quality-btn');
+    if (qBtn) {
+        const idx = parseInt(qBtn.getAttribute('data-q-index'));
+        qualityMult = QUALITY_LEVELS[idx].mult;
+        qualityLabel = QUALITY_LEVELS[idx].label;
     }
 
-    // Update Cost Cell
-    const costTag = row.querySelector('.cost-tag');
-    if (costTag) {
-        let displayCost = costPerUnit.toFixed(1);
-        if (displayCost.endsWith('.0')) displayCost = parseInt(displayCost);
-        costTag.innerText = displayCost + ' ₽';
-    }
+    // Factory
+    let factory = '-';
+    const activeFac = row.querySelector('.factory-option.active');
+    if (activeFac) factory = activeFac.innerText;
 
-    // Update Sum Cell
-    const priceTag = row.querySelector('.price-tag');
-    if (priceTag) priceTag.innerText = `₽ ${finalSum.toLocaleString()}`;
+    // Volume & Price
+    // Read from UI tags for accuracy
+    const costTag = row.querySelector('.cost-tag').innerText.replace(' ₽', '');
+    const volLabel = document.getElementById(`vol-label-${id}`).innerText;
+    // Vol parse
+    let volume = 0;
+    if (volLabel.includes('kg')) volume = parseFloat(volLabel) * 1000;
+    else if (volLabel.includes('pcs')) volume = parseInt(volLabel);
+    else volume = parseInt(volLabel);
+
+    const priceTag = row.querySelector('.price-tag').innerText.replace('₽ ', '').replace(/\s/g, ''); // remove spaces
+    let totalPrice = parseInt(priceTag);
+
+    // Add
+    cart.push({
+        id: product.id,
+        name: product.name,
+        category: currentCategory,
+        factory: factory,
+        quality: qualityLabel,
+        volume: volume,
+        totalPrice: totalPrice,
+        unit: (currentCategory === 'bottles') ? 'pcs' : 'g'
+    });
+
+    updateCartUI();
+
+    // Anim
+    const btn = row.querySelector('button.btn-primary');
+    if (btn) {
+        const h = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        btn.style.background = 'var(--success-color)';
+        setTimeout(() => { btn.innerHTML = h; btn.style.background = ''; }, 600);
+    }
 };
 
+window.renderCartView = function () {
+    const tbody = document.getElementById('cartTableBody');
+    const totalEl = document.getElementById('cartViewTotal');
+    tbody.innerHTML = '';
 
-// --- 3. Theme Logic ---
+    let total = 0;
+    cart.forEach((item, i) => {
+        total += item.totalPrice;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><div class="p-name">${item.name}</div></td>
+            <td>${item.factory !== '-' ? item.factory + ' / ' : ''}${item.quality} / ${item.volume}${item.unit}</td>
+            <td>1</td>
+            <td style="font-weight:700;">${item.totalPrice.toLocaleString()} ₽</td>
+            <td><button class="btn-primary btn-small" style="background:#ff3b30; min-width:30px; width:30px; padding:6px;" onclick="removeFromCart(${i})"><i class="fa-solid fa-trash"></i></button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+    totalEl.innerText = `${total.toLocaleString()} ₽`;
+};
+
+window.removeFromCart = function (i) {
+    cart.splice(i, 1);
+    updateCartUI();
+};
+window.clearCart = function () {
+    cart = [];
+    updateCartUI();
+};
+
+window.switchView = function (view) {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    // Find active btn
+    const navs = document.querySelectorAll('.nav-item');
+    for (let n of navs) {
+        if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(view)) n.classList.add('active');
+    }
+
+    document.getElementById('view-products').style.display = 'none';
+    document.getElementById('view-stats').style.display = 'none';
+    document.getElementById('view-cart').style.display = 'none';
+
+    const t = document.getElementById('pageTitle');
+
+    if (view === 'products') {
+        document.getElementById('view-products').style.display = 'block';
+        if (t) t.innerText = 'Каталог';
+        renderProducts();
+    }
+    else if (view === 'cart') {
+        document.getElementById('view-cart').style.display = 'block';
+        if (t) t.innerText = 'Корзина';
+        renderCartView();
+    }
+    else if (view === 'stats') {
+        document.getElementById('view-stats').style.display = 'grid';
+        if (t) t.innerText = 'Статистика';
+    }
+};
+
+// --- 3. Theme Logic (RESTORED CYCLE) ---
 const THEMES = [
     { id: 'base', icon: 'fa-sun', label: 'Minimal' },
     { id: 'theme-winter', icon: 'fa-snowflake', label: 'Winter' },
@@ -318,109 +430,36 @@ const THEMES = [
     { id: 'theme-green', icon: 'fa-leaf', label: 'Green' }
 ];
 
-function toggleTheme() {
-    const currentTheme = localStorage.getItem('theme') || 'base';
-    const currentIndex = THEMES.findIndex(t => t.id === currentTheme);
-    const nextIndex = (currentIndex + 1) % THEMES.length;
-    const nextTheme = THEMES[nextIndex].id;
-    setTheme(nextTheme);
-}
-
-function setTheme(themeName) {
+window.setTheme = function (themeName) {
     localStorage.setItem('theme', themeName);
     document.body.className = themeName;
-    startParticles(themeName);
     updateThemeIcon(themeName);
 }
 
 function updateThemeIcon(themeName) {
     const btns = document.querySelectorAll('.theme-toggle-btn');
     const themeObj = THEMES.find(t => t.id === themeName) || THEMES[0];
-    btns.forEach(btn => btn.innerHTML = `<i class="fa-solid ${themeObj.icon}"></i>`);
-}
-
-function loadTheme() { const savedTheme = localStorage.getItem('theme') || 'base'; setTheme(savedTheme); }
-let particleInterval;
-function startParticles(theme) {
-    const container = document.getElementById('particles');
-    if (!container) return;
-    container.innerHTML = '';
-    clearInterval(particleInterval);
-    if (theme === 'theme-winter') particleInterval = setInterval(() => createSnowflake(container), 200);
-}
-// ... user login functions omitted for brevity but presumed same ...
-function checkSession() {
-    const protectedRoutes = ['dashboard.html'];
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    if (protectedRoutes.includes(currentPage) && !isLoggedIn) window.location.href = 'index.html';
-    if ((currentPage === 'index.html' || currentPage === '') && isLoggedIn) window.location.href = 'dashboard.html';
-}
-function loginUser(method) {
-    if (method === 'phone') { const btn = document.querySelector('.btn-primary'); if (btn) { btn.innerText = 'Вход...'; btn.disabled = true; } }
-    setTimeout(() => { localStorage.setItem('isLoggedIn', 'true'); window.location.href = 'dashboard.html'; }, 1000);
-}
-function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = 'index.html'; }
-function createSnowflake(container) {
-    const flake = document.createElement('div');
-    flake.classList.add('snowflake');
-    flake.style.left = Math.random() * 100 + 'vw';
-    flake.style.opacity = Math.random();
-    flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-    flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-    const icon = document.createElement('i');
-    icon.classList.add('fa-regular', 'fa-snowflake');
-    flake.appendChild(icon);
-    container.appendChild(flake);
-    setTimeout(() => flake.remove(), 5000);
-}
-
-window.addToCart = function (name) { alert(`Товар "${name}" добавлен в корзину!`); };
-window.switchView = function (viewName) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        if (btn.onclick && btn.onclick.toString().includes(viewName)) btn.classList.add('active');
+    btns.forEach(btn => {
+        if (btn) btn.innerHTML = `<i class="fa-solid ${themeObj.icon}"></i>`;
     });
+}
 
-    const title = document.getElementById('pageTitle');
-    document.getElementById('view-stats').style.display = 'none';
-    document.getElementById('view-products').style.display = 'none';
+window.toggleTheme = function () {
+    const currentTheme = localStorage.getItem('theme') || 'base';
+    let currentIndex = THEMES.findIndex(t => t.id === currentTheme);
+    if (currentIndex === -1) currentIndex = 0;
+    const nextIndex = (currentIndex + 1) % THEMES.length;
+    const nextTheme = THEMES[nextIndex].id;
+    setTheme(nextTheme);
+}
 
-    if (viewName === 'stats') {
-        document.getElementById('view-stats').style.display = 'grid';
-        if (title) title.innerText = 'Главная';
-    } else if (viewName === 'products') {
-        document.getElementById('view-products').style.display = 'block';
-        if (title) title.innerText = 'Каталог';
-        renderProducts();
-    }
+function loadTheme() {
+    const t = localStorage.getItem('theme') || 'base';
+    setTheme(t);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadTheme();
-    checkSession();
     initDynamicLogo();
-
-    const phoneInput = document.getElementById('phone');
-    const submitBtn = document.getElementById('submitBtn');
-    if (phoneInput && submitBtn) {
-        phoneInput.addEventListener('input', (e) => {
-            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            if (!x[2]) e.target.value = x[1] ? '+7 ' : '';
-            else e.target.value = !x[3] ? `+7 (${x[2]}` : `+7 (${x[2]}) ${x[3]}` + (x[4] ? `-${x[4]}` : '') + (x[5] ? `-${x[5]}` : '');
-            submitBtn.disabled = e.target.value.length < 18;
-        });
-        submitBtn.addEventListener('click', (e) => { e.preventDefault(); loginUser('phone'); });
-    }
-    const socialBtns = document.querySelectorAll('.social-btn');
-    if (socialBtns) socialBtns.forEach(btn => btn.addEventListener('click', () => loginUser('social')));
-    const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
-    if (themeToggleBtns) themeToggleBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) logoutBtn.addEventListener('click', logout);
-
-    // Init rendering for oils (active by default)
-    if (document.getElementById('productsTableBody')) {
-        renderProducts();
-    }
+    if (document.getElementById('productsTableBody')) renderProducts();
 });

@@ -897,24 +897,23 @@ body[class*="theme-"] .bottle-container {
     color: #ff3b30 !important;
 }
 
-/* Red */
+/* Q2: Red */
 .q-mid .quality-icon {
-    color: #ffcc00 !important;
+    color: #ff3b30 !important;
 }
 
-/* Orange/Yellow */
+/* Q1: Green */
 .q-mid-high .quality-icon {
-    color: #ccff00 !important;
-    text-shadow: 0 0 5px #ccff00;
+    color: #28cd41 !important;
+    text-shadow: 0 0 5px rgba(40, 205, 65, 0.4);
 }
 
-/* Lime */
+/* TOP: Purple */
 .q-top .quality-icon {
-    color: #34c759 !important;
-    text-shadow: 0 0 8px #34c759;
+    color: #bf5af2 !important;
+    text-shadow: 0 0 10px rgba(191, 90, 242, 0.5);
 }
 
-/* Green */
 .q-top:hover {
     border-color: #34c759;
 }
@@ -1194,4 +1193,97 @@ body.theme-winter .theme-switcher {
         max-width: none;
         padding: 24px;
     }
+}
+/* --- FLOATING CART PROGRESS BASKET --- */
+.cart-progress-container {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 500px;
+    background: rgba(20, 20, 20, 0.95); /* Dark default for contrast */
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 60px;
+    padding: 10px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 9999;
+    color: white; font-family: var(--font-main);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px); /* Hidden by default */
+}
+.cart-progress-container.visible { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
+
+/* Theme adaptation */
+body:not(.theme-winter):not([class*="theme-"]) .cart-progress-container {
+    background: rgba(255, 255, 255, 0.9); color: black; border: 1px solid rgba(0,0,0,0.1);
+}
+
+.cart-icon-box {
+    width: 40px; height: 40px; background: var(--primary-color);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: var(--bg-color); font-size: 1.1rem; flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.cart-info { flex: 1; margin: 0 20px; display: flex; flex-direction: column; justify-content: center; }
+
+.cart-labels { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+.cart-min-hint { font-size: 0.75rem; opacity: 0.7; font-weight: 500; }
+
+.progress-track {
+    width: 100%; height: 6px; background: rgba(128,128,128,0.2);
+    border-radius: 10px; overflow: hidden; position: relative;
+}
+.progress-fill {
+    height: 100%; width: 0%; background: var(--primary-color);
+    border-radius: 10px; transition: width 0.5s ease;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+/* Orange acccent for progress if desired, or theme color */
+.cart-progress-container .progress-fill { background: #ff9500; box-shadow: 0 0 10px #ff9500; }
+body.theme-cyberpunk .cart-progress-container .progress-fill { background: #00ff9d; box-shadow: 0 0 10px #00ff9d; }
+
+.cart-total-badge {
+    background: rgba(128,128,128,0.1); padding: 5px 12px;
+    border-radius: 20px; font-weight: 700; font-size: 0.9rem;
+    border: 1px solid rgba(128,128,128,0.2); white-space: nowrap;
+}
+
+/* OVERRIDE COLORS FINAL */
+/* Q2: Red */
+.q-mid .quality-icon { color: #ff3b30 !important; }
+
+/* Q1: Green */
+.q-mid-high .quality-icon { color: #28cd41 !important; text-shadow: 0 0 5px rgba(40, 205, 65, 0.3); }
+
+/* TOP: Blue */
+.q-top .quality-icon { color: #007aff !important; text-shadow: 0 0 8px rgba(0, 122, 255, 0.4); }
+.q-top:hover { border-color: #007aff; }
+
+/* Theme Toggle Button Styling */
+.theme-toggle-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+body[class*="theme-"] .theme-toggle-btn {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+body[class*="theme-"] .theme-toggle-btn:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
 }

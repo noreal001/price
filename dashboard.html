@@ -4,43 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAHUR - Личный Кабинет</title>
+    <title>BAHUR - Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="base">
-    <!-- Particle Container -->
-    <div id="particles"></div>
-
+<body class="theme-winter">
     <div class="dashboard-container">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
+                <i class="fa-solid fa-cube brand-icon" id="dynamicLogoSidebar"></i>
                 <span class="brand-name">BAHUR</span>
-                <i id="dynamicLogoSidebar" class="fa-solid fa-cube dynamic-logo-icon brand-icon"></i>
             </div>
             <nav class="sidebar-nav">
-                <button class="nav-item active" onclick="switchView('stats')">
-                    <i class="fa-solid fa-home"></i>
-                    <span>Главная</span>
-                </button>
-                <button class="nav-item" onclick="switchView('products')">
+                <button class="nav-item active" onclick="switchView('products')">
                     <i class="fa-solid fa-box-open"></i>
-                    <span>Товары</span>
+                    <span>Каталог</span>
                 </button>
-                <button class="nav-item" onclick="alert('В разработке')">
-                    <i class="fa-solid fa-wallet"></i>
-                    <span>Кошелек</span>
+                <button class="nav-item" onclick="switchView('cart')">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Корзина</span>
+                    <span id="sidebar-cart-count"
+                        style="margin-left:auto; font-size:0.8rem; background:var(--primary-color); color:var(--bg-color); padding:2px 8px; border-radius:10px; display:none; font-weight:700;">0</span>
                 </button>
-                <button class="nav-item" onclick="alert('В разработке')">
+                <button class="nav-item" onclick="switchView('stats')">
                     <i class="fa-solid fa-chart-line"></i>
                     <span>Статистика</span>
                 </button>
+                <button class="nav-item" onclick="switchView('wallet')">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Кошелек</span>
+                </button>
+                <button class="nav-item" onclick="switchView('profile')">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Профиль</span>
+                </button>
             </nav>
             <div class="sidebar-footer">
-                <button id="logoutBtn" class="nav-item logout">
+                <button class="nav-item logout" id="logoutBtn">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span>Выход</span>
                 </button>
@@ -49,86 +52,63 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <header class="top-bar">
-                <h2 id="pageTitle">Главная</h2>
+            <div class="top-bar">
+                <h2 id="pageTitle">Каталог</h2>
                 <div class="user-profile">
-                    <div class="theme-switcher-dashboard">
-                        <button class="theme-btn theme-toggle-btn" title="Переключить тему">
-                            <i class="fa-solid fa-sun"></i>
-                        </button>
-                    </div>
+                    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Сменить тему">
+                        <i class="fa-solid fa-sun"></i>
+                    </button>
                     <div class="avatar">
                         <i class="fa-solid fa-user"></i>
                     </div>
                 </div>
-            </header>
+            </div>
 
-            <!-- View: Stats (Default) -->
-            <div id="view-stats" class="content-grid">
+            <!-- Stats View -->
+            <div id="view-stats" class="content-grid" style="display: none;">
                 <div class="card stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
                     <div class="stat-info">
                         <h3>Баланс</h3>
-                        <p class="value">₽ 124,500</p>
+                        <div class="value">0 ₽</div>
                     </div>
                 </div>
-                <div class="card stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-user-group"></i></div>
-                    <div class="stat-info">
-                        <h3>Подписчики</h3>
-                        <p class="value">1,284</p>
-                    </div>
-                </div>
-                <div class="card stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
-                    <div class="stat-info">
-                        <h3>Заказы</h3>
-                        <p class="value">45</p>
-                    </div>
-                </div>
-                <!-- Recent Activity -->
-                <div class="card large-card">
-                    <h3>Последняя активность</h3>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="icon bg-green"><i class="fa-solid fa-check"></i></div>
-                            <div class="details">
-                                <h4>Заказ #4295 выполнен</h4>
-                                <span class="time">Только что</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- More stats... -->
             </div>
 
-            <!-- View: Products (Hidden by default) -->
-            <div id="view-products" class="content-grid" style="display: none;">
-                <div class="card large-card">
-                    <div class="catalog-header">
-                        <h3>Каталог</h3>
-                        <div class="category-tabs">
-                            <div class="cat-tab-wrapper">
-                                <button class="cat-tab active" onclick="toggleBrandDropdown(this, event)">
-                                    <i class="fa-solid fa-droplet"></i>
-                                    <span>Масла</span>
-                                    <i class="fa-solid fa-chevron-down arrow-icon"></i>
-                                </button>
-                                <div class="brand-dropdown" id="oilsDropdown">
-                                    <div class="dropdown-item" onclick="filterByBrand('All')">Все бренды</div>
-                                    <!-- Populated by JS -->
-                                </div>
-                            </div>
-                            <button class="cat-tab" onclick="switchCategory('bottles', this)">
-                                <i class="fa-solid fa-prescription-bottle"></i>
-                                <span>Флаконы</span>
-                            </button>
-                            <button class="cat-tab" onclick="switchCategory('perfume', this)">
-                                <i class="fa-solid fa-spray-can"></i>
-                                <span>Раствор</span>
-                            </button>
-                        </div>
-                    </div>
+            <!-- Products View -->
+            <div id="view-products">
 
+                <!-- Catalog Header / Categories -->
+                <div class="catalog-header">
+                    <div class="category-tabs">
+                        <div class="cat-tab-wrapper">
+                            <button class="cat-tab active" onclick="switchCategory('oils', this)">
+                                <i class="fa-solid fa-bottle-droplet"></i> Масла
+                                <i class="fa-solid fa-angle-down arrow-icon"></i>
+                            </button>
+                            <!-- Dropdown for Brands -->
+                            <div class="brand-dropdown">
+                                <div class="dropdown-item" onclick="filterBrand('all')">Все бренды</div>
+                                <div class="dropdown-item" onclick="filterBrand('Luzi')">Luzi</div>
+                                <div class="dropdown-item" onclick="filterBrand('Eps')">Eps</div>
+                                <div class="dropdown-item" onclick="filterBrand('Seluz')">Seluz</div>
+                                <div class="dropdown-item" onclick="filterBrand('Givaudan')">Givaudan</div>
+                                <div class="dropdown-item" onclick="filterBrand('Mane')">Mane</div>
+                            </div>
+                        </div>
+
+                        <button class="cat-tab" onclick="switchCategory('bottles', this)">
+                            <i class="fa-solid fa-flask"></i> Флаконы
+                        </button>
+                        <button class="cat-tab" onclick="switchCategory('perfume', this)">
+                            <i class="fa-solid fa-spray-can-sparkles"></i> Парфюмерия
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="card large-card">
                     <div class="table-responsive">
                         <table class="products-table">
                             <thead>
@@ -143,14 +123,66 @@
                                 </tr>
                             </thead>
                             <tbody id="productsTableBody">
-                                <!-- Populated by JS -->
+                                <!-- JS Injected -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Cart View (NEW) -->
+            <div id="view-cart" style="display: none;">
+                <div class="card large-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3>Ваш заказ</h3>
+                        <button class="btn-primary btn-small"
+                            style="width:auto; background:var(--error-color); border-color:var(--error-color);"
+                            onclick="clearCart()">Очистить корзину</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Товар</th>
+                                    <th>Детали</th>
+                                    <th>Кол-во</th>
+                                    <th>Цена</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartTableBody">
+                                <!-- Cart Items -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top:20px; text-align:right; font-size:1.5rem; font-weight:700;">
+                        Итого: <span id="cartViewTotal" style="color:var(--primary-color);">0 ₽</span>
+                    </div>
+                    <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+                        <button class="btn-primary" style="width:200px;">Оформить заказ</button>
+                    </div>
+                </div>
+            </div>
+
         </main>
+    </div>
+
+    <!-- Floating Cart Progress Bar -->
+    <div id="cartBar" class="cart-progress-container">
+        <div class="cart-icon-box">
+            <i class="fa-solid fa-basket-shopping"></i>
+        </div>
+        <div class="cart-info">
+            <div class="cart-labels">
+                <span id="cartSum">0 ₽</span>
+                <span id="cartTarget">5 000 ₽</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="cartProgress" style="width: 0%;"></div>
+            </div>
+            <div class="cart-min-hint" id="cartHint">Еще 5 000 ₽ до минимального заказа</div>
+        </div>
+        <div class="cart-total-badge" id="cartBadge">0 items</div>
     </div>
 
     <script src="data.js"></script>
