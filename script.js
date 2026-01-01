@@ -21,69 +21,109 @@ function initDynamicLogo() {
 
     let index = 0;
     setInterval(() => {
-        // Fade out
         logoEl.classList.add('fade-out');
-
         setTimeout(() => {
-            // Change icon
             index = (index + 1) % abstractIcons.length;
             logoEl.className = `fa-solid ${abstractIcons[index]} dynamic-logo-icon brand-icon`;
-            // Fade in
             logoEl.classList.remove('fade-out');
         }, 500);
     }, 5000);
 }
 
 
-// --- 2. Product Logic (Smart Table) ---
-const productsDB = [
-    { id: 1, name: "Royal Oud", basePrice: 500 },
-    { id: 2, name: "Musk Tahara", basePrice: 300 },
-    { id: 3, name: "Black Afghan", basePrice: 600 },
-    { id: 4, name: "Amber Wood", basePrice: 450 },
-    { id: 5, name: "Molecule 02", basePrice: 400 },
-    { id: 6, name: "Baccarat Rouge", basePrice: 700 },
-    { id: 7, name: "Zam Zam", basePrice: 250 },
-    { id: 8, name: "Sandalwood", basePrice: 350 },
-];
+// --- 2. Product Logic & Categories ---
+let currentCategory = 'oils';
+let currentBrandFilter = 'All';
 
-const brands = ["Gulf Premium", "Swiss Arabian", "French Essence", "Local Blend"];
 const qualities = ["Top (Pure)", "Premium", "Standard"];
-const volumes = [
-    { label: "3ml", multiplier: 1 },
-    { label: "6ml", multiplier: 1.8 },
-    { label: "12ml", multiplier: 3.2 },
-    { label: "50ml", multiplier: 10 },
-    { label: "100ml", multiplier: 18 }
-];
+
+// Category Switcher
+window.switchCategory = function (cat, btn) {
+    currentCategory = cat;
+    currentBrandFilter = 'All'; // Reset filter when switching
+
+    // UI Update
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    // If inside wrapper, find btn ref might be tricky? No, btn passes 'this'
+    // If button is wrapped, ensure we target it correctly.
+    if (btn) btn.classList.add('active');
+
+    renderProducts();
+};
+
+window.toggleBrandDropdown = function (btn, event) {
+    // Only for oils, or if we want generic? The request was specifically for "Oils arrow".
+    // switch category to oils first if not already
+    if (currentCategory !== 'oils') switchCategory('oils', btn);
+
+    const dropdown = document.getElementById('oilsDropdown');
+    dropdown.classList.toggle('show');
+    event.stopPropagation();
+};
+
+window.filterByBrand = function (brand) {
+    currentBrandFilter = brand;
+    renderProducts();
+    // Close dropdown
+    const dropdown = document.getElementById('oilsDropdown');
+    dropdown.classList.remove('show');
+};
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('oilsDropdown');
+    if (dropdown && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+    }
+});
 
 function renderProducts() {
     const tbody = document.getElementById('productsTableBody');
     if (!tbody) return;
-
     tbody.innerHTML = '';
 
-    productsDB.forEach(product => {
+    // Select Data from data.js
+    let data = [];
+    if (currentCategory === 'oils') {
+        data = catalogOils;
+        if (currentBrandFilter !== 'All') {
+            data = data.filter(p => p.brand === currentBrandFilter);
+        }
+    }
+    else if (currentCategory === 'bottles') data = catalogBottles;
+    else if (currentCategory === 'perfume') data = catalogPerfume;
+
+    data.forEach(product => {
         const tr = document.createElement('tr');
+
+        // Define controls
+        let brandHtml = `<span style="color:var(--text-color);">${product.brand || '-'}</span>`;
+        let qualHtml = `<select class="custom-select quality-select" onchange="updatePrice(${product.id}, this)">
+                            ${qualities.map((q, i) => `<option value="${1 + (2 - i) * 0.2}">${q}</option>`).join('')}
+                        </select>`;
+
+        let min = 30, max = 5000, step = 5, val = 30;
+
+        if (currentCategory === 'bottles') {
+            min = 10; max = 1000; step = 10; val = 50;
+            min = 10; // Override
+            brandHtml = `<span style="font-size:0.9rem; color:#999;">-</span>`;
+            qualHtml = `<span style="font-size:0.9rem; color:#999;">Standard</span><input type="hidden" class="quality-select" value="1">`;
+        }
+
         tr.innerHTML = `
             <td class="product-name-cell">${product.name}</td>
-            <td>
-                <select class="custom-select" onchange="updatePrice(${product.id}, this)">
-                    ${brands.map(b => `<option>${b}</option>`).join('')}
-                </select>
+            <td>${brandHtml}</td>
+            <td>${qualHtml}</td>
+            <td style="width: 200px;">
+                <div class="volume-control">
+                    <input type="range" class="volume-slider" min="${min}" max="${max}" step="${step}" value="${val}" 
+                           oninput="handleVolumeInput(this, ${product.id})">
+                    <span class="volume-label" id="vol-label-${product.id}">${val}</span>
+                </div>
             </td>
             <td>
-                <select class="custom-select quality-select" onchange="updatePrice(${product.id}, this)">
-                    ${qualities.map((q, i) => `<option value="${1 + (2 - i) * 0.2}">${q}</option>`).join('')}
-                </select>
-            </td>
-            <td>
-                <select class="custom-select volume-select" onchange="updatePrice(${product.id}, this)">
-                    ${volumes.map(v => `<option value="${v.multiplier}">${v.label}</option>`).join('')}
-                </select>
-            </td>
-            <td>
-                <span class="price-tag" id="price-${product.id}">₽ ${product.basePrice}</span>
+                <span class="price-tag" id="price-${product.id}">...</span>
             </td>
             <td>
                 <button class="btn-primary btn-small" onclick="addToCart('${product.name}')">
@@ -92,29 +132,87 @@ function renderProducts() {
             </td>
         `;
         tbody.appendChild(tr);
-        setTimeout(() => updatePrice(product.id, tr.querySelector('.volume-select')), 0);
+        // Init logic
+        handleVolumeInput(tr.querySelector('.volume-slider'), product.id);
     });
 }
 
-window.updatePrice = function (id, changedElement) {
-    const row = changedElement.closest('tr');
-    const qualityMult = parseFloat(row.querySelector('.quality-select').value);
-    const volumeMult = parseFloat(row.querySelector('.volume-select').value);
+// Logic: Smart Slider & Price
+window.handleVolumeInput = function (slider, id) {
+    let val = parseInt(slider.value);
 
-    const product = productsDB.find(p => p.id === id);
-    const finalPrice = Math.round(product.basePrice * qualityMult * volumeMult);
+    // Snapping Logic
+    if (currentCategory !== 'bottles') {
+        if (val > 500) val = Math.round(val / 500) * 500;
+        if (val === 0) val = 30; // Min bound safety
+    } else {
+        if (val > 100) val = Math.round(val / 50) * 50;
+    }
 
-    row.querySelector('.price-tag').innerText = `₽ ${finalPrice}`;
+    // Label Logic
+    const label = document.getElementById(`vol-label-${id}`);
+    if (currentCategory === 'bottles') {
+        label.innerText = val + ' pcs';
+    } else {
+        if (val >= 1000) label.innerText = (val / 1000).toFixed(1) + ' kg';
+        else label.innerText = val + ' g';
+    }
+
+    updatePrice(id, slider, val);
 };
 
-window.addToCart = function (name) {
-    alert(`Товар "${name}" добавлен в корзину!`);
+window.updatePrice = function (id, sourceElement, overrideVol) {
+    const row = sourceElement.closest('tr');
+    const qualityEl = row.querySelector('.quality-select');
+    const qualityMult = qualityEl ? parseFloat(qualityEl.value) : 1;
+
+    let vol = overrideVol;
+    if (vol === undefined) {
+        const slider = row.querySelector('.volume-slider');
+        vol = parseInt(slider.value);
+        // Apply snap logic for recalc consistency
+        if (currentCategory !== 'bottles' && vol > 500) vol = Math.round(vol / 500) * 500;
+    }
+
+    // Find Product in correct catalog
+    let product;
+    if (currentCategory === 'oils') product = catalogOils.find(p => p.id === id);
+    else if (currentCategory === 'bottles') product = catalogBottles.find(p => p.id === id);
+    else if (currentCategory === 'perfume') product = catalogPerfume.find(p => p.id === id); // Fix: use perfume catalog
+
+    if (!product) return;
+
+    // Price Formula
+    let finalPrice = 0;
+    if (currentCategory === 'bottles') {
+        finalPrice = product.basePrice * vol;
+    } else {
+        finalPrice = Math.round(product.basePrice * (vol / 10) * qualityMult);
+    }
+
+    row.querySelector('.price-tag').innerText = `₽ ${finalPrice.toLocaleString()}`;
 };
 
+function populateDropdown() {
+    const dropdown = document.getElementById('oilsDropdown');
+    if (!dropdown) return;
+
+    // Keep 'All' option
+    dropdown.innerHTML = `<div class="dropdown-item" onclick="filterByBrand('All')">Все бренды</div>`;
+
+    BRANDS_LIST.forEach(brand => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        item.innerText = brand;
+        item.onclick = () => filterByBrand(brand);
+        dropdown.appendChild(item);
+    });
+}
+
+window.addToCart = function (name) { alert(`Товар "${name}" добавлен в корзину!`); };
 window.switchView = function (viewName) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    const btns = document.querySelectorAll('.nav-item');
-    btns.forEach(btn => {
+    document.querySelectorAll('.nav-item').forEach(btn => {
         if (btn.onclick && btn.onclick.toString().includes(viewName)) btn.classList.add('active');
     });
 
@@ -127,14 +225,13 @@ window.switchView = function (viewName) {
         if (title) title.innerText = 'Главная';
     } else if (viewName === 'products') {
         document.getElementById('view-products').style.display = 'block';
-        if (title) title.innerText = 'Каталог Товаров';
+        if (title) title.innerText = 'Каталог';
         renderProducts();
     }
 }
 
 
-// --- 3. Single Button Theme Logic ---
-
+// --- 3. Theme Logic ---
 const THEMES = [
     { id: 'base', icon: 'fa-sun', label: 'Minimal' },
     { id: 'theme-winter', icon: 'fa-snowflake', label: 'Winter' },
@@ -153,7 +250,6 @@ function toggleTheme() {
     const currentIndex = THEMES.findIndex(t => t.id === currentTheme);
     const nextIndex = (currentIndex + 1) % THEMES.length;
     const nextTheme = THEMES[nextIndex].id;
-
     setTheme(nextTheme);
 }
 
@@ -165,36 +261,20 @@ function setTheme(themeName) {
 }
 
 function updateThemeIcon(themeName) {
-    // Ideally update all theme toggles on page
     const btns = document.querySelectorAll('.theme-toggle-btn');
     const themeObj = THEMES.find(t => t.id === themeName) || THEMES[0];
-
-    btns.forEach(btn => {
-        // Clear existing icon content
-        btn.innerHTML = `<i class="fa-solid ${themeObj.icon}"></i>`;
-        // Optional: Tooltip
-        btn.title = `Theme: ${themeObj.label}`;
-    });
+    btns.forEach(btn => btn.innerHTML = `<i class="fa-solid ${themeObj.icon}"></i>`);
 }
 
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'base';
-    // Guard against defunct themes
-    const validTheme = THEMES.find(t => t.id === savedTheme) ? savedTheme : 'base';
-    setTheme(validTheme);
-}
-
+function loadTheme() { const savedTheme = localStorage.getItem('theme') || 'base'; setTheme(savedTheme); }
 let particleInterval;
 function startParticles(theme) {
     const container = document.getElementById('particles');
     if (!container) return;
     container.innerHTML = '';
     clearInterval(particleInterval);
-    if (theme === 'theme-winter') {
-        particleInterval = setInterval(() => createSnowflake(container), 200);
-    }
+    if (theme === 'theme-winter') particleInterval = setInterval(() => createSnowflake(container), 200);
 }
-
 function createSnowflake(container) {
     const flake = document.createElement('div');
     flake.classList.add('snowflake');
@@ -210,8 +290,7 @@ function createSnowflake(container) {
 }
 
 
-// --- 4. Session & Init ---
-
+// --- 4. Init ---
 function checkSession() {
     const protectedRoutes = ['dashboard.html'];
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -219,30 +298,18 @@ function checkSession() {
     if (protectedRoutes.includes(currentPage) && !isLoggedIn) window.location.href = 'index.html';
     if ((currentPage === 'index.html' || currentPage === '') && isLoggedIn) window.location.href = 'dashboard.html';
 }
-
 function loginUser(method) {
-    console.log(`Logging in via ${method}...`);
-    if (method === 'phone') {
-        const btn = document.querySelector('.btn-primary');
-        if (btn) { btn.innerText = 'Вход...'; btn.disabled = true; }
-    }
-    setTimeout(() => {
-        localStorage.setItem('isLoggedIn', 'true');
-        window.location.href = 'dashboard.html';
-    }, 1000);
+    if (method === 'phone') { const btn = document.querySelector('.btn-primary'); if (btn) { btn.innerText = 'Вход...'; btn.disabled = true; } }
+    setTimeout(() => { localStorage.setItem('isLoggedIn', 'true'); window.location.href = 'dashboard.html'; }, 1000);
 }
-
-function logout() {
-    localStorage.removeItem('isLoggedIn');
-    window.location.href = 'index.html';
-}
+function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = 'index.html'; }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadTheme();
     checkSession();
     initDynamicLogo();
+    populateDropdown(); // Fill brand list
 
-    // Phone Input
     const phoneInput = document.getElementById('phone');
     const submitBtn = document.getElementById('submitBtn');
     if (phoneInput && submitBtn) {
@@ -254,19 +321,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         submitBtn.addEventListener('click', (e) => { e.preventDefault(); loginUser('phone'); });
     }
-
     const socialBtns = document.querySelectorAll('.social-btn');
     if (socialBtns) socialBtns.forEach(btn => btn.addEventListener('click', () => loginUser('social')));
-
-    // Single Theme Toggle
     const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
-    if (themeToggleBtns) {
-        themeToggleBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
-    }
-
+    if (themeToggleBtns) themeToggleBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
+    // Init rendering for oils (active by default)
     if (document.getElementById('productsTableBody')) {
         renderProducts();
     }

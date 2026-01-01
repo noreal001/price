@@ -82,7 +82,6 @@ body.theme-yellow {
     --shadow-soft: 0 0 20px rgba(255, 234, 0, 0.15);
     --table-border: #443e00;
     --text-color: #fff;
-    /* Ensure text visible */
 }
 
 body.theme-red {
@@ -134,7 +133,6 @@ body {
     width: 100vw;
 }
 
-/* --- Theme Backgrounds --- */
 body.theme-winter {
     background: #000000;
 }
@@ -143,18 +141,10 @@ body.theme-winter .card {
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Common Background Pattern for Neon Themes */
 body[class*="theme-"]:not(.theme-winter) {
-    background:
-        repeating-linear-gradient(0deg,
-            transparent,
-            transparent 2px,
-            rgba(255, 255, 255, 0.02) 2px,
-            rgba(255, 255, 255, 0.02) 4px),
-        #050505;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.02) 2px, rgba(255, 255, 255, 0.02) 4px), #050505;
 }
 
-/* Card Styles for Neon Themes */
 body[class*="theme-"]:not(.theme-winter) .card {
     border: 1px solid var(--border-color);
     box-shadow: 0 0 15px var(--shadow-soft);
@@ -197,8 +187,7 @@ body[class*="theme-"]:not(.theme-winter) .theme-switcher {
     border-color: var(--primary-color);
 }
 
-
-/* ================= LOGIN & COMMON ================= */
+/* Common */
 .login-container {
     width: 100%;
     height: 100%;
@@ -226,12 +215,10 @@ body[class*="theme-"] .login-card {
     border-radius: 4px;
 }
 
-/* Winter overrides */
 body.theme-winter .login-card {
     border-radius: 16px;
     border-color: rgba(255, 255, 255, 0.3);
 }
-
 
 .brand-logo {
     font-size: 2.5rem;
@@ -272,7 +259,6 @@ body[class*="theme-"] .subtitle {
     color: rgba(255, 255, 255, 0.85);
 }
 
-/* Form Elements */
 .input-group {
     text-align: left;
     margin-bottom: 24px;
@@ -297,8 +283,7 @@ body[class*="theme-"] .input-group label {
 .input-icon {
     position: absolute;
     left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 14px;
     color: #999;
     font-size: 1rem;
     transition: color 0.3s;
@@ -321,10 +306,6 @@ input[type="tel"]:focus {
     border-color: var(--primary-color);
 }
 
-body:not([class*="theme-"]) input[type="tel"]:focus {
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
-}
-
 body[class*="theme-"]:not(.theme-winter) input[type="tel"]:focus {
     box-shadow: 0 0 15px var(--shadow-soft);
 }
@@ -332,10 +313,6 @@ body[class*="theme-"]:not(.theme-winter) input[type="tel"]:focus {
 input[type="tel"]:focus+.input-icon,
 .input-wrapper:focus-within .input-icon {
     color: var(--primary-color);
-}
-
-body:not([class*="theme-"]) .input-wrapper:focus-within .input-icon {
-    color: black;
 }
 
 body.theme-winter .input-wrapper:focus-within .input-icon {
@@ -356,7 +333,7 @@ body.theme-winter .input-wrapper:focus-within .input-icon {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s, background-color 0.2s;
+    transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
 }
 
 body.theme-winter .btn-primary {
@@ -368,7 +345,6 @@ body.theme-winter .btn-primary {
     opacity: 0.5;
     cursor: not-allowed;
     background: #ccc;
-    box-shadow: none !important;
 }
 
 body[class*="theme-"] .btn-primary:disabled {
@@ -472,11 +448,6 @@ body.theme-winter .footer-text a {
     text-decoration: underline;
 }
 
-.footer-text a:hover {
-    text-decoration: underline;
-}
-
-/* ================= DASHBOARD STYLES ================= */
 .dashboard-container {
     display: flex;
     width: 100%;
@@ -592,11 +563,6 @@ body[class*="theme-"] .nav-item:hover {
     justify-content: center;
 }
 
-body.theme-winter .avatar {
-    color: black;
-    background: white;
-}
-
 .theme-switcher-dashboard {
     display: flex;
     gap: 8px;
@@ -615,7 +581,6 @@ body.theme-winter .avatar {
     transform: scale(1.1);
 }
 
-/* --- CONTENT GRID & CARDS --- */
 .content-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -674,7 +639,6 @@ body[class*="theme-"] .stat-info h3 {
     color: var(--text-color);
 }
 
-/* --- PRODUCTS TABLE --- */
 .table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -756,7 +720,163 @@ body[class*="theme-"] .custom-select {
     font-size: 0.85rem;
 }
 
-/* Animation Utils */
+/* Volume Slider */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.volume-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.volume-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+    min-width: 60px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Catalog Header & Tabs --- */
+.catalog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Tab Wrapper for Dropdown */
+.cat-tab-wrapper {
+    position: relative;
+}
+
+.cat-tab {
+    background: transparent;
+    border: 1px solid transparent;
+    font-size: 1rem;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.cat-tab i {
+    font-size: 1.2rem;
+}
+
+.cat-tab:hover {
+    color: var(--text-color);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.cat-tab.active {
+    color: var(--primary-color);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+body[class*="theme-"] .cat-tab:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body[class*="theme-"] .cat-tab.active {
+    text-shadow: 0 0 10px var(--primary-color);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-color);
+}
+
+/* Arrow & Dropdown */
+.arrow-icon {
+    font-size: 0.8rem !important;
+    opacity: 0;
+    transition: opacity 0.3s;
+    transform: translateX(-5px);
+}
+
+.cat-tab:hover .arrow-icon,
+.cat-tab.active .arrow-icon {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.brand-dropdown {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    min-width: 220px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+    border-radius: 12px;
+    z-index: 1000;
+    padding: 8px;
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.brand-dropdown.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+body[class*="theme-"] .brand-dropdown {
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--primary-color);
+}
+
+body[class*="theme-"] .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -794,7 +914,6 @@ body[class*="theme-"] .custom-select {
     }
 }
 
-/* Theme Switcher */
 .theme-switcher {
     position: absolute;
     top: 20px;

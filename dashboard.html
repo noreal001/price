@@ -104,9 +104,30 @@
             <!-- View: Products (Hidden by default) -->
             <div id="view-products" class="content-grid" style="display: none;">
                 <div class="card large-card">
-                    <h3>Каталог BAHUR</h3>
-                    <p class="subtitle" style="margin-bottom: 20px;">Выберите бренд, качество и объем для расчета цены.
-                    </p>
+                    <div class="catalog-header">
+                        <h3>Каталог</h3>
+                        <div class="category-tabs">
+                            <div class="cat-tab-wrapper">
+                                <button class="cat-tab active" onclick="toggleBrandDropdown(this, event)">
+                                    <i class="fa-solid fa-droplet"></i>
+                                    <span>Масла</span>
+                                    <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                                </button>
+                                <div class="brand-dropdown" id="oilsDropdown">
+                                    <div class="dropdown-item" onclick="filterByBrand('All')">Все бренды</div>
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            <button class="cat-tab" onclick="switchCategory('bottles', this)">
+                                <i class="fa-solid fa-prescription-bottle"></i>
+                                <span>Флаконы</span>
+                            </button>
+                            <button class="cat-tab" onclick="switchCategory('perfume', this)">
+                                <i class="fa-solid fa-spray-can"></i>
+                                <span>Раствор</span>
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="table-responsive">
                         <table class="products-table">
@@ -131,6 +152,7 @@
         </main>
     </div>
 
+    <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
 
