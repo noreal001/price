@@ -332,7 +332,7 @@ function updateCartUI() {
             bagRect.setAttribute('height', h);
         }
 
-        generateSegments('mainBarSegmented', pct, 35);
+        generateSegments('mainBarSegmented', pct, 45);
 
         // Make cart bar clickable
         bar.style.cursor = 'pointer';
@@ -350,7 +350,7 @@ function updateCartUI() {
         const targetSum = lvlInfo.nextThreshold.toLocaleString('ru-RU').replace(/,/g, ' ');
         pLvlProg.innerText = `${currentSum} / ${targetSum}`;
 
-        generateSegments('profileLvlBar', pct, 45);
+        generateSegments('profileLvlBar', pct, 75);
     }
 
     // Sidebar Counter
