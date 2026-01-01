@@ -1,3 +1,4 @@
+/* Base Theme (Minimalist) */
 :root {
     --bg-color: #ffffff;
     --text-color: #000000;
@@ -8,6 +9,52 @@
     --success-color: #34c759;
     --font-main: 'Inter', sans-serif;
     --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --card-bg: white;
+    --input-bg: #fafafa;
+    --particle-color: transparent;
+    --overlay-bg: transparent;
+}
+
+/* Theme: Winter (Total Black) */
+body.theme-winter {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --primary-color: #ffffff;
+    --secondary-color: #111111;
+    --border-color: #333333;
+    --card-bg: rgba(0, 0, 0, 0.85);
+    --input-bg: #111111;
+    --shadow-soft: 0 4px 20px rgba(255, 255, 255, 0.1);
+    --particle-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Theme: Cyberpunk (Maximal Neon/Glitch) */
+body.theme-cyberpunk {
+    --bg-color: #05000a;
+    --text-color: #ffffff;
+    --primary-color: #f000ff;
+    /* Hot Magenta */
+    --secondary-color: #1a0033;
+    --border-color: #00ffff;
+    /* Cyan Border for contrast */
+    --card-bg: rgba(10, 0, 20, 0.9);
+    --input-bg: #000000;
+    --shadow-soft: 0 0 30px rgba(240, 0, 255, 0.5);
+    --particle-color: transparent;
+}
+
+/* Theme: Ocean (Maximal Deep Blue) */
+body.theme-ocean {
+    --bg-color: #000022;
+    --text-color: #e0f7fa;
+    --primary-color: #00d4ff;
+    /* Neon Blue */
+    --secondary-color: #001040;
+    --border-color: #0066ff;
+    --card-bg: rgba(0, 10, 40, 0.7);
+    --input-bg: rgba(0, 30, 80, 0.5);
+    --shadow-soft: 0 8px 40px rgba(0, 60, 255, 0.3);
+    --particle-color: rgba(100, 200, 255, 0.6);
 }
 
 * {
@@ -24,15 +71,167 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    overflow: hidden;
+    position: relative;
 }
 
+/* --- Theme Backgrounds & Special Effects --- */
+
+/* Winter: Pure Black */
+body.theme-winter {
+    background: #000000;
+}
+
+body.theme-winter .login-card {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Cyberpunk: Glitch & Electric */
+body.theme-cyberpunk {
+    background: radial-gradient(circle at center, #1a0033 0%, #000000 100%);
+}
+
+body.theme-cyberpunk::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Electric Grids */
+    background-image:
+        linear-gradient(rgba(180, 0, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: 0;
+    mask-image: radial-gradient(circle, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle, black 40%, transparent 100%);
+}
+
+body.theme-cyberpunk::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(255, 0, 255, 0.1) 20deg, transparent 40deg);
+    animation: radar-sweep 10s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes radar-sweep {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+body.theme-cyberpunk .login-card {
+    border: 1px solid var(--border-color);
+    box-shadow:
+        -5px 0 0 rgba(255, 0, 255, 0.5),
+        5px 0 0 rgba(0, 255, 255, 0.5);
+    /* Split color shadow */
+    animation: glitch-skew 3s infinite steps(2);
+    position: relative;
+    z-index: 10;
+}
+
+@keyframes glitch-skew {
+
+    0%,
+    100% {
+        transform: translate(0);
+    }
+
+    92% {
+        transform: translate(-2px, 1px);
+    }
+
+    94% {
+        transform: translate(2px, -1px);
+    }
+
+    96% {
+        transform: translate(0);
+    }
+}
+
+body.theme-cyberpunk .btn-primary {
+    background: linear-gradient(90deg, #b400ff, #00d4ff);
+    box-shadow: 0 0 20px rgba(180, 0, 255, 0.6);
+    border: none;
+}
+
+body.theme-cyberpunk .input-icon {
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+}
+
+/* Ocean: Deep Saturation + Caustics */
+body.theme-ocean {
+    /* Highly saturated deep blue gradient */
+    background: radial-gradient(circle at bottom, #0044cc 0%, #000033 80%, #000000 100%);
+}
+
+body.theme-ocean::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Caustic light effect */
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity: 0.3;
+    animation: water-shimmer 15s ease-in-out infinite alternate;
+}
+
+@keyframes water-shimmer {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+body.theme-ocean .login-card {
+    background: rgba(0, 20, 60, 0.6);
+    /* Translucent */
+    backdrop-filter: blur(20px) saturate(180%);
+    /* Enhanced saturation blur */
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 10, 40, 0.8);
+}
+
+body.theme-ocean .btn-primary {
+    background: linear-gradient(to right, #0066ff, #00d4ff);
+    box-shadow: 0 4px 25px rgba(0, 100, 255, 0.4);
+}
+
+body.theme-ocean .input-icon {
+    color: #00d4ff;
+}
+
+/* Standard Layout */
 .login-container {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at center, #fafafa 0%, #ffffff 100%);
+    z-index: 10;
+    position: relative;
+    background: transparent;
 }
 
 .login-card {
@@ -41,6 +240,7 @@ body {
     padding: 40px;
     background: white;
     text-align: center;
+    z-index: 10;
 }
 
 .brand-logo {
@@ -62,6 +262,12 @@ body {
     margin-bottom: 32px;
 }
 
+body.theme-winter .subtitle,
+body.theme-ocean .subtitle,
+body.theme-cyberpunk .subtitle {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 /* Form Styles */
 .input-group {
     text-align: left;
@@ -74,6 +280,12 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
     color: #333;
+}
+
+body.theme-winter .input-group label,
+body.theme-ocean .input-group label,
+body.theme-cyberpunk .input-group label {
+    color: var(--text-color);
 }
 
 .input-wrapper {
@@ -99,13 +311,23 @@ input[type="tel"] {
     border-radius: 12px;
     outline: none;
     transition: all 0.2s ease;
-    background: #fafafa;
+    background: var(--input-bg);
+    color: var(--text-color);
 }
 
 input[type="tel"]:focus {
     border-color: var(--primary-color);
-    background: white;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+body.theme-cyberpunk input[type="tel"]:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+body.theme-ocean input[type="tel"]:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
 }
 
 input[type="tel"]:focus+.input-icon,
@@ -117,7 +339,7 @@ input[type="tel"]:focus+.input-icon,
     width: 100%;
     padding: 16px;
     background: var(--primary-color);
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 12px;
     font-size: 1rem;
@@ -127,18 +349,30 @@ input[type="tel"]:focus+.input-icon,
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+}
+
+body.theme-winter .btn-primary {
+    color: #000;
 }
 
 .btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     background: #ccc;
+    box-shadow: none !important;
+}
+
+body.theme-winter .btn-primary:disabled,
+body.theme-ocean .btn-primary:disabled,
+body.theme-cyberpunk .btn-primary:disabled {
+    background: #333;
+    color: #666;
 }
 
 .btn-primary:not(:disabled):hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px var(--shadow-soft);
 }
 
 /* Divider */
@@ -159,10 +393,16 @@ input[type="tel"]:focus+.input-icon,
     z-index: 0;
 }
 
+body.theme-winter .divider::before,
+body.theme-ocean .divider::before,
+body.theme-cyberpunk .divider::before {
+    background: rgba(255, 255, 255, 0.2);
+}
+
 .divider span {
     position: relative;
     z-index: 1;
-    background: white;
+    background: var(--card-bg);
     padding: 0 16px;
     color: #999;
     font-size: 0.85rem;
@@ -191,15 +431,37 @@ input[type="tel"]:focus+.input-icon,
     justify-content: center;
 }
 
+body.theme-winter .social-btn,
+body.theme-ocean .social-btn,
+body.theme-cyberpunk .social-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
 .social-btn:hover {
     border-color: #ddd;
     background: #fafafa;
     transform: translateY(-2px);
 }
 
+body.theme-winter .social-btn:hover,
+body.theme-ocean .social-btn:hover,
+body.theme-cyberpunk .social-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
 .footer-text {
     font-size: 0.9rem;
     color: #666;
+}
+
+body.theme-winter .footer-text,
+body.theme-ocean .footer-text,
+body.theme-cyberpunk .footer-text {
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .footer-text a {
@@ -225,6 +487,113 @@ input[type="tel"]:focus+.input-icon,
     }
 }
 
-.login-card {
-    animation: fadeIn 0.6s ease-out;
+/* Particle Container */
+#particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.snowflake,
+.bubble {
+    position: absolute;
+    color: var(--particle-color);
+    pointer-events: none;
+}
+
+.snowflake {
+    top: -10px;
+    animation: fall linear forwards;
+}
+
+.bubble {
+    bottom: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    animation: rise linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(360deg);
+    }
+}
+
+@keyframes rise {
+    to {
+        transform: translateY(-110vh);
+        opacity: 0;
+    }
+}
+
+/* Theme Switcher */
+.theme-switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.theme-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #999;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.theme-btn.active {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-winter .theme-btn.active {
+    color: black;
+}
+
+body.theme-ocean .theme-btn.active {
+    color: #000040;
+    background: #00d4ff;
+}
+
+body.theme-cyberpunk .theme-btn.active {
+    color: black;
+    background: #00ffff;
+}
+
+/* Specific button colors for better visibility in switcher */
+body.theme-winter .theme-switcher {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.theme-cyberpunk .theme-switcher {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: #00ffff;
 }

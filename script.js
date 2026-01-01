@@ -3,14 +3,88 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
     const loginForm = document.getElementById('loginForm');
 
-    // Phone Masking Logic
+    // Theme Switcher Logic
+    const themeBtns = document.querySelectorAll('.theme-btn');
+    const body = document.body;
+    const particlesContainer = document.getElementById('particles');
+    let particleInterval;
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'minimal';
+    setTheme(savedTheme);
+
+    themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.dataset.theme;
+            setTheme(theme);
+        });
+    });
+
+    function setTheme(theme) {
+        // Update body class
+        body.className = ''; // Clear all themes
+        if (theme !== 'minimal') {
+            body.classList.add(`theme-${theme}`);
+        }
+
+        // Update buttons
+        themeBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.theme === theme);
+        });
+
+        // Save preferences
+        localStorage.setItem('theme', theme);
+
+        // Handle Particles
+        clearInterval(particleInterval);
+        particlesContainer.innerHTML = ''; // Clear existing
+
+        if (theme === 'winter') {
+            startParticles('snowflake', 200);
+        } else if (theme === 'ocean') {
+            startParticles('bubble', 400);
+        } else if (theme === 'cyberpunk') {
+            // Maybe some glitch effect later? 
+            // For now, clean or specific CSS background handles it
+        }
+    }
+
+    function startParticles(type, delay) {
+        const createParticle = () => {
+            const el = document.createElement('div');
+            el.classList.add(type);
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.opacity = Math.random();
+            el.style.fontSize = (Math.random() * 10 + 10) + 'px';
+
+            if (type === 'bubble') {
+                el.style.width = (Math.random() * 20 + 10) + 'px';
+                el.style.height = el.style.width;
+            } else {
+                el.innerHTML = '❄';
+            }
+
+            const duration = Math.random() * 5 + 5;
+            el.style.animationDuration = duration + 's';
+
+            particlesContainer.appendChild(el);
+
+            // Cleanup
+            setTimeout(() => {
+                el.remove();
+            }, duration * 1000);
+        };
+
+        particleInterval = setInterval(createParticle, delay);
+        createParticle(); // Immediate start
+    }
+
+    // Phone Masking Logic (Existing)
     const maskOptions = {
         mask: '+7 (000) 000-00-00',
         lazy: false
     };
 
-    // Simple custom masking implementation to avoid external dependencies for now
-    // or we can use a simple regex approach for formatting
     phoneInput.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
         let formattedValue = '';
@@ -25,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
             value = value.substring(1);
         }
 
-        // Limit length
         value = value.substring(0, 10);
 
         if (value.length > 0) formattedValue += '+7 (' + value.substring(0, 3);
@@ -37,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         validateForm();
     });
 
-    // Handle backspace better
     phoneInput.addEventListener('keydown', (e) => {
         if (e.key === 'Backspace' && phoneInput.value.length <= 4) {
             e.preventDefault();
@@ -48,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function validateForm() {
         const value = phoneInput.value.replace(/\D/g, '');
-        // 11 digits including country code (7 + 10 digits)
         const isValid = value.length === 11;
 
         submitBtn.disabled = !isValid;
@@ -59,22 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Handle Form Submission
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
-
         const btnContent = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Вход...';
 
-        // Simulate API call
         setTimeout(() => {
             submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Успешно!';
             submitBtn.style.background = 'var(--success-color)';
-
             setTimeout(() => {
                 alert('Успешный вход! Переход в личный кабинет...');
-                // Reset for demo
                 submitBtn.innerHTML = btnContent;
                 submitBtn.style.background = '';
                 submitBtn.disabled = false;
@@ -85,8 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Social Login Interaction
     document.querySelectorAll('.social-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const provider = btn.title;
-            alert(`Вход через ${provider} в разработке`);
+            alert(`Вход через ${btn.title} в разработке`);
         });
     });
 });
