@@ -30,8 +30,8 @@ function initDynamicLogo() {
             logoEl.className = `fa-solid ${abstractIcons[index]} dynamic-logo-icon brand-icon`;
             // Fade in
             logoEl.classList.remove('fade-out');
-        }, 500); // Wait for fade out
-    }, 5000); // Every 5 seconds
+        }, 500);
+    }, 5000);
 }
 
 
@@ -91,9 +91,7 @@ function renderProducts() {
                 </button>
             </td>
         `;
-        // Initial price calcs hidden in attributes or defaults
         tbody.appendChild(tr);
-        // Trigger initial calculation
         setTimeout(() => updatePrice(product.id, tr.querySelector('.volume-select')), 0);
     });
 }
@@ -114,57 +112,69 @@ window.addToCart = function (name) {
 };
 
 window.switchView = function (viewName) {
-    // Update menu
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    // Find the button that called this (rough match)
     const btns = document.querySelectorAll('.nav-item');
     btns.forEach(btn => {
         if (btn.onclick && btn.onclick.toString().includes(viewName)) btn.classList.add('active');
     });
 
-    // Update Title
     const title = document.getElementById('pageTitle');
-
-    // Hide all views
     document.getElementById('view-stats').style.display = 'none';
     document.getElementById('view-products').style.display = 'none';
 
-    // Show selected
     if (viewName === 'stats') {
-        document.getElementById('view-stats').style.display = 'grid'; // Grid for stats
+        document.getElementById('view-stats').style.display = 'grid';
         if (title) title.innerText = 'Главная';
     } else if (viewName === 'products') {
         document.getElementById('view-products').style.display = 'block';
         if (title) title.innerText = 'Каталог Товаров';
-        renderProducts(); // Re-render to ensure fresh state
+        renderProducts();
     }
 }
 
 
-// --- 3. Existing Theme & Login Logic ---
+// --- 3. Single Button Theme Logic ---
+
+const THEMES = [
+    { id: 'base', icon: 'fa-sun', label: 'Minimal' },
+    { id: 'theme-winter', icon: 'fa-snowflake', label: 'Winter' },
+    { id: 'theme-cyberpunk', icon: 'fa-bolt', label: 'Cyberpunk' }
+];
+
+function toggleTheme() {
+    const currentTheme = localStorage.getItem('theme') || 'base';
+    const currentIndex = THEMES.findIndex(t => t.id === currentTheme);
+    const nextIndex = (currentIndex + 1) % THEMES.length;
+    const nextTheme = THEMES[nextIndex].id;
+
+    setTheme(nextTheme);
+}
 
 function setTheme(themeName) {
     localStorage.setItem('theme', themeName);
     document.body.className = themeName;
     startParticles(themeName);
-    updateThemeButtons(themeName);
+    updateThemeIcon(themeName);
 }
 
-function updateThemeButtons(themeName) {
-    const buttons = document.querySelectorAll('.theme-btn');
-    buttons.forEach(btn => {
-        if ((btn.onclick && btn.onclick.toString().includes(themeName)) ||
-            (btn.dataset && btn.dataset.theme === themeName.replace('theme-', ''))) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+function updateThemeIcon(themeName) {
+    // Ideally update all theme toggles on page
+    const btns = document.querySelectorAll('.theme-toggle-btn');
+    const themeObj = THEMES.find(t => t.id === themeName) || THEMES[0];
+
+    btns.forEach(btn => {
+        // Clear existing icon content
+        btn.innerHTML = `<i class="fa-solid ${themeObj.icon}"></i>`;
+        // Optional: Tooltip
+        btn.title = `Theme: ${themeObj.label}`;
     });
 }
 
 function loadTheme() {
     const savedTheme = localStorage.getItem('theme') || 'base';
-    setTheme(savedTheme);
+    // Guard against defunct themes
+    const validTheme = THEMES.find(t => t.id === savedTheme) ? savedTheme : 'base';
+    setTheme(validTheme);
 }
 
 let particleInterval;
@@ -192,7 +202,9 @@ function createSnowflake(container) {
     setTimeout(() => flake.remove(), 5000);
 }
 
-// Session
+
+// --- 4. Session & Init ---
+
 function checkSession() {
     const protectedRoutes = ['dashboard.html'];
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -218,11 +230,10 @@ function logout() {
     window.location.href = 'index.html';
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', () => {
     loadTheme();
     checkSession();
-    initDynamicLogo(); // Start logo animation
+    initDynamicLogo();
 
     // Phone Input
     const phoneInput = document.getElementById('phone');
@@ -237,20 +248,18 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.addEventListener('click', (e) => { e.preventDefault(); loginUser('phone'); });
     }
 
-    // Buttons
     const socialBtns = document.querySelectorAll('.social-btn');
     if (socialBtns) socialBtns.forEach(btn => btn.addEventListener('click', () => loginUser('social')));
 
-    const themeBtns = document.querySelectorAll('.theme-switcher .theme-btn');
-    if (themeBtns) themeBtns.forEach(btn => btn.addEventListener('click', function () {
-        const theme = this.dataset.theme;
-        if (theme) setTheme(theme === 'minimal' ? 'base' : `theme-${theme}`);
-    }));
+    // Single Theme Toggle
+    const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
+    if (themeToggleBtns) {
+        themeToggleBtns.forEach(btn => btn.addEventListener('click', toggleTheme));
+    }
 
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
-    // Initial Render if on dashboard
     if (document.getElementById('productsTableBody')) {
         renderProducts();
     }
